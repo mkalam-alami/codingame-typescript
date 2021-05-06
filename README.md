@@ -6,8 +6,8 @@ Ce template permet de travailler sur son bot en dehors de l'éditeur Codingame.
 **Avantages**
 
 * Utiliser son éditeur favori
-* Découper son code en plusieurs fichiers si on veut
-* Faire des tests auto si on veut
+* Découper son code en plusieurs fichiers si on veut (un build Webpack rassemble tout en un fichier)
+* Faire des tests auto si on veut (avec Jest)
 
 **Inconvénient**
 
