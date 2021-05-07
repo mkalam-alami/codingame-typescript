@@ -99,7 +99,7 @@ function parseMove(input: string): Move {
     case 'WAIT': move = { type: 'WAIT' }; break;
     case 'GROW': move = { type: 'GROW', cellId: parseInt(tokens[1]) }; break;
     case 'COMPLETE': move = { type: 'COMPLETE', cellId: parseInt(tokens[1]) }; break;
-    case 'SEED': move = { type: 'SEED', sourceId: parseInt(tokens[1]), targetId: parseInt(tokens[1]) }; break;
+    case 'SEED': move = { type: 'SEED', sourceId: parseInt(tokens[1]), targetId: parseInt(tokens[2]) }; break;
     default: throw new Error('Unknown move: ' + input);
   }
 
