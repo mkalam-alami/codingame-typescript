@@ -31,6 +31,7 @@ La commande lance simultanément deux types de tests :
 * Tests unitaires (`src/*.spec.ts`), qui permettent de couvrir vos fonctions et classes hors `index.ts`, mais pas l'exécution du bot ;  
 * Tests end-to-end (`e2e/*.spec.ts`), qui permettent de donner des lignes de test en entrée du bot et vérifier le résultat.
 
+Attention : les tests end-to-end utilisent la **version compilée** du bot. Il vaut mieux donc garder un `npm start` d'ouvert en même temps.
 
 ## Challenge Spring 2021
 
