@@ -1,3 +1,5 @@
+import { Move as Move } from "./move";
+
 export type Map = Cell[];
 
 export interface Cell {
@@ -5,7 +7,7 @@ export interface Cell {
   /**
    * 0 is the center cell, the next cells spiral outwards
    */
-  index: number;
+  cellId: number;
 
   /**
    * 0 if the cell is unusable, 1-3 for usable cells
@@ -65,7 +67,7 @@ export interface GameState {
    */
   trees: Tree[];
 
-  possibleMoves: string[];
+  possibleMoves: Move[];
 }
 
 export interface Tree {
@@ -73,7 +75,7 @@ export interface Tree {
   /**
    * location of this tree
    */
-  cellIndex: number;
+  cellId: number;
 
   /**
    * location of this tree
