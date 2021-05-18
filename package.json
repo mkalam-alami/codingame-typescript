@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack --watch",
     "test": "jest --watch",
-    "exec": "ts-node -r tsconfig-paths/register --files"
+    "exec": "ts-node -r tsconfig-paths/register --files",
+    "simulate": "npm run exec -- e2e/simulate"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.1",
