@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "lib": ["ES2020", "DOM"],
     "module": "commonjs",
     "allowJs": true,
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["jest"],
-    "forceConsistentCasingInFileNames": true
+    "types": ["jest", "node"],
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@e2e/*": ["e2e/*"]
+    }
   }
 }

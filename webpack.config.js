@@ -1,7 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: {
+    codingame: './src/index.ts'
+  },
   mode: 'production',
   module: {
     rules: [
@@ -10,7 +12,7 @@ module.exports = {
         use: [{
           loader: 'ts-loader',
           options: {
-            configFile: "e2e/tsconfig.json"
+            configFile: "tsconfig.json"
           }
         }],
         exclude: /node_modules/,
@@ -18,10 +20,14 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@e2e': path.resolve(__dirname, 'e2e')
+    }
   },
   output: {
-    filename: 'codingame.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   optimization: {

@@ -1,4 +1,4 @@
-import { runBot } from "./runner";
+import { runBot } from "@e2e/runner";
 
 describe('Bot', () => {
 

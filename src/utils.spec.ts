@@ -1,4 +1,4 @@
-import { sayHello } from "./utils";
+import { sayHello } from "@/utils";
 
 describe('Utils', () => {
 
