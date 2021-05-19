@@ -1,10 +1,11 @@
-import { MoveNode, Node } from "./internal/node";
+import { Clock } from "./clock";
+import { MoveNode, Node, printNode } from "./internal/node";
 import pickRandom from "./internal/pickRandom";
 import { Move, MoveHeuristic } from "./move";
 import { State, StateHeuristic } from "./state";
 
 export interface MinimaxOptions {
-  searchTimeoutInMs: number; // TODO Implement timeout
+  searchTimeoutInMs: number;
   maxDepth: number;
   moveRandomization: number; // TODO Implement randomization config
 }
@@ -20,13 +21,17 @@ export class Minimax<T, U extends Move> {
   }
 
   searchBestMove(rootState: State<T, U>, options: { printGraph?: boolean } = {}): U {
+    const clock = new Clock();
     const root = new Node(rootState);
 
-    // TODO Explore multiple times
-    this.explore(root, this.options.maxDepth);
+    for (let i = 0; i < 100; i++) { // TODO Explore more intelligently
+      this.explore(root, this.options.maxDepth);
+      if (clock.readMillis() >= this.options.searchTimeoutInMs) {
+        break;      }
+    }
 
     if (options.printGraph) {
-      // TODO Support printing the graph
+      printNode(root);
     }
 
     if (root.children.length === 0) {
@@ -66,6 +71,7 @@ export class Minimax<T, U extends Move> {
   private aggregateValue(node: Node<T, U>) {
     let currentNode = node;
     let isFullyExploredUpToNow = true;
+
     while (currentNode.parent) {
       const parent = currentNode.parent;
       const minMaxFunc = parent.state.isOurTurn() ? Math.min : Math.max;

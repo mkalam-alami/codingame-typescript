@@ -5,6 +5,6 @@ const isFirstPlayer = parseIsFirstPlayer();
 
 while (true) {
     const state = parseState(isFirstPlayer);
-    const move = connect4minimax.searchBestMove(state, { printGraph: true });
+    const move = connect4minimax.searchBestMove(state);
     console.log(move.column);
 }

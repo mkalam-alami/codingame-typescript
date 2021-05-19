@@ -25,5 +25,5 @@ export function parseState(isFirstPlayer: boolean): Connect4State {
   }
   const _oppPreviousAction: number = parseInt(readline());
 
-  return new Connect4State(isOurTurn, board);
+  return new Connect4State(isFirstPlayer ? 0 : 1, isOurTurn, board);
 }
