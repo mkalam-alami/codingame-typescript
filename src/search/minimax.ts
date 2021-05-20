@@ -1,5 +1,5 @@
 import { Clock } from "./clock";
-import { MoveNode, Node, printNode } from "./internal/node";
+import { MoveNode, Node, formatNode } from "./internal/node";
 import pickRandom from "./internal/pickRandom";
 import { Move, MoveHeuristic } from "./move";
 import { State, StateHeuristic } from "./state";
@@ -27,11 +27,13 @@ export class Minimax<T, U extends Move> {
     for (let i = 0; i < 100; i++) { // TODO Explore more intelligently
       this.explore(root, this.options.maxDepth);
       if (clock.readMillis() >= this.options.searchTimeoutInMs) {
-        break;      }
+        break;
+      }
     }
 
     if (options.printGraph) {
-      printNode(root);
+      clock.print();
+      formatNode(root);
     }
 
     if (root.children.length === 0) {

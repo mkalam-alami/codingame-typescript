@@ -42,7 +42,11 @@ export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (stat
       if (value !== EMPTY) {
         for (let offset of FULL_PASS_NEIGHBOR_OFFSETS) {
           const length = chainLength({ column, row }, offset, board);
-          heuristic += Math.pow(2, length) * ((value === state.ourPlayerIndex) ? 1 : -1);
+          if (length >= 4) {
+            return (value === state.ourPlayerIndex ? 1 : -1) * Number.MAX_VALUE;
+          } else if (length > 1) {
+            heuristic += Math.pow(2, length) * ((value === state.ourPlayerIndex) ? 1 : -1);
+          }
         }
       }
     }

@@ -11,7 +11,7 @@ export default function chainLength(start: Coords, direction: Offset, board: Con
     coords = { column: coords.column + direction.dx, row: coords.row + direction.dy };
   }
   if (isValidCell(coords.column, coords.row) && length === 3) {
-    return Number.MAX_VALUE;
+    length++;
   }
 
   return length;

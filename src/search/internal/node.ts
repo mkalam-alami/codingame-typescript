@@ -29,11 +29,16 @@ export class Node<T, U extends Move> {
 }
 
 export function printNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
-  console.debug(spaces(offset) + '> ' + node.minimaxValue)
+  console.error(formatNode(node, offset));
+}
+
+export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
+  let lines = spaces(offset) + '> ' + node.minimaxValue + '\n';
   for (const child of node.children) {
-    console.debug(spaces(offset + 2) + child.move.format());
-    printNode(child.node, offset + 4);
+    lines += spaces(offset + 2) + child.move.format() + '\n';
+    lines += formatNode(child.node, offset + 4);
   }
+  return lines;
 }
 
 function spaces(count: number) {

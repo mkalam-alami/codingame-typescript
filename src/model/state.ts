@@ -2,6 +2,7 @@ import { getCellAt, setCellAt } from "../utils/cellAt";
 import { Move } from "../search/move";
 import { State } from "../search/state";
 import fallingRow from "@/utils/fallingRow";
+import playMove from "@/utils/playMove";
 
 export const ROWS = 8;
 export const COLUMNS = 9;
@@ -42,11 +43,8 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
 
   fork(move: Connect4Move): Connect4State {
     const forkedBoard = [...this.board];
-    const row = fallingRow(this.board, move.column);
-    if (!row) throw new Error('tried to play a move at a full column');
-    const newCell = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex)) as Connect4Cell;
-    setCellAt(forkedBoard, move.column, row, newCell);
-
+    const newCellValue = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex)) as Connect4Cell;
+    playMove(forkedBoard, move.column, newCellValue);
     return new Connect4State(this.ourPlayerIndex, !this._isOurTurn, forkedBoard);
   }
 
