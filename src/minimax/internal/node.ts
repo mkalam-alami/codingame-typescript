@@ -27,22 +27,30 @@ export class Node<T, U extends Move> {
     }
   }
 
-  get isLeaf() {
+  get isEnd() {
     return this.minimaxValue === Number.MAX_VALUE
       || this.minimaxValue === -Number.MAX_VALUE;
   }
 
 }
 
-export function printNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
-  console.error(formatNode(node, offset));
+export function printNode<T, U extends Move>(node: Node<T, U>, maxDepth = -1, offset = 0) {
+  console.error(formatNode(node, maxDepth, offset));
 }
 
-export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0): string {
-  let output = spaces(offset) + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.lastMove?.format() || 'ROOT') + ' ' + (node.state.isOurTurn() ? 'P1' : 'P2') + ' turn \n';
-  if (node.children) {
-    for (const child of node.children) {
-      output += formatNode(child, offset + 4);
+export function formatNode<T, U extends Move>(node: Node<T, U>, maxDepth = -1, offset = 0): string {
+  let output = spaces(offset) + (node.lastMove?.format() || 'ROOT') + ' ' + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.state.isOurTurn() ? 'P1' : 'P2') + ' turn \n';
+  if (node.children && maxDepth !== 0) {
+    if (maxDepth === 1) {
+      output += spaces(offset + 2);
+      for (const child of node.children) {
+        output += child.lastMove?.format() + ' [' + formatMinimax(child.minimaxValue) + '] ';
+      }
+      output += '\n';
+    } else {
+      for (const child of node.children) {
+        output += formatNode(child, maxDepth - 1, offset + 4);
+      }
     }
   }
   return output;

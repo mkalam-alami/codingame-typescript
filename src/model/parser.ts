@@ -1,10 +1,10 @@
 import Connect4State, { Connect4Board } from "./connect4state";
 
 export function parseIsFirstPlayer(): boolean {
-  return readline() === '0';
+  return readline().split(' ')[0] === '0';
 }
 
-export function parseState(isFirstPlayer: boolean): Connect4State {
+export function parseState(isFirstPlayer: boolean): [Connect4State, number] {
   const turnIndex = parseInt(readline());
   const isOurTurn = turnIndex % 2 === (isFirstPlayer ? 0 : 1);
 
@@ -23,7 +23,7 @@ export function parseState(isFirstPlayer: boolean): Connect4State {
   for (let i = 0; i < numValidActions; i++) {
     parseInt(readline());
   }
-  const _oppPreviousAction: number = parseInt(readline());
+  const oppPreviousAction: number = parseInt(readline());
 
-  return new Connect4State(isFirstPlayer ? 0 : 1, isOurTurn, board);
+  return [new Connect4State(isFirstPlayer ? 0 : 1, isOurTurn, board), oppPreviousAction];
 }

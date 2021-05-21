@@ -18,7 +18,6 @@ for (let i = 0; i < 20; i++) {
     maxIterations: 10,
     //timeoutInMs: 70,
     //printBranches: true,
-    //printFinalGraph: false,
     //printIterationCount: true
   });
   const bestMove = minimax.searchBestMove(state);

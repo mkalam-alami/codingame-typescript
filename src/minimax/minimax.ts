@@ -12,7 +12,8 @@ export interface MinimaxOptions {
   maxIterations: number;
   printIterationCount: boolean;
   printClock: boolean;
-  printFinalGraph: boolean;
+  printFinalGraph: boolean | number;
+  exportFinalGraph: boolean | number;
   printBranches: boolean;
 }
 
@@ -20,7 +21,9 @@ export class Minimax<T, U extends Move> {
 
   // TODO Implement board caching by hash, reusable across multiple runs
 
-  constructor(private options: Partial<MinimaxOptions> = {}) { }
+  constructor(private options: Partial<MinimaxOptions> = {}) {
+    this.options.maxDepth ??= 50;
+  }
 
   searchBestMove(rootState: State<T, U>): U {
     const clock = new Clock();
@@ -29,9 +32,10 @@ export class Minimax<T, U extends Move> {
 
     let i: number;
     for (i = 0; i < maxIterations; i++) {
-      const node = this.explore(root, this.options.maxDepth);
-      if (this.options.printBranches) console.error(formatMoves(node));
-      if (node === root) break; // Fully explored
+      const leaf = this.explore(root, this.options.maxDepth);
+      if (this.options.printBranches) console.error(formatMoves(leaf));
+
+      if (root.isFullyExplored) break; // Fully explored
       if (clock.readMillis() >= this.options.timeoutInMs) {
         if (this.options.printClock) console.error(`Aborting due to timeout`);
         break;
@@ -40,9 +44,9 @@ export class Minimax<T, U extends Move> {
     if (this.options.printIterationCount) console.error(`Ran ${i} iterations`);
 
     if (this.options.printClock) clock.print();
-    if (this.options.printFinalGraph) {
-      const out = formatNode(root);
-      //console.error(out);
+    if (this.options.printFinalGraph) console.error(formatNode(root, typeof this.options.printFinalGraph === 'boolean' ? -1 : this.options.printFinalGraph));
+    if (this.options.exportFinalGraph) {
+      const out = formatNode(root, typeof this.options.exportFinalGraph === 'boolean' ? -1 : this.options.exportFinalGraph);
       writeFileSync('out.log', out);
     }
 
@@ -58,24 +62,20 @@ export class Minimax<T, U extends Move> {
     return bestChild.lastMove;
   }
 
-  private explore(node: Node<T, U>, maxDepth?: number): Node<T, U> {
-    node.initChildren();
-    const unexploredChildren = node.children.filter(c => !(c.isFullyExplored));
-    if (node.isLeaf || maxDepth === 0 || unexploredChildren.length === 0) {
-      node.isFullyExplored = true;
-      this.aggregateValue(node);
+  private explore(node: Node<T, U>, maxDepth: number) {
+    if (node.isEnd || maxDepth === 0) {
+      this.finalizeNode(node);
       return node;
     }
 
+    node.initChildren();
+    const unexploredChildren = node.children.filter(c => !c.isFullyExplored);
     const child = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
-    if (!child.isFullyExplored) {
-      return this.explore(child, maxDepth ? maxDepth - 1 : undefined);
-    } else {
-      return child;
-    }
+    if (child === undefined) console.log(unexploredChildren, node);
+    return this.explore(child, maxDepth - 1);
   }
 
-  private aggregateValue(node: Node<T, U>) {
+  private finalizeNode(node: Node<T, U>) {
     let currentNode = node;
     let isFullyExploredUpToNow = true;
 
@@ -86,9 +86,9 @@ export class Minimax<T, U extends Move> {
       currentNode.minimaxValue = currentNode.children
         .map(child => child.minimaxValue)
         .reduce((a, b) => minMaxFunc(a, b), currentNode.minimaxValue);
+
       if (isFullyExploredUpToNow) {
-        isFullyExploredUpToNow =
-          currentNode.isFullyExplored = !currentNode.children.find(n => !n.isFullyExplored);
+        isFullyExploredUpToNow = currentNode.isFullyExplored = !currentNode.children.find(n => !n.isFullyExplored);
       }
     }
   }
