@@ -51,7 +51,7 @@ describe('heuristics: state evaluation', () => {
     expect(heuristic).toBe(0);
   });
 
-  it('should give small value to longer but small chain', () => {
+  it('should give greater value to longer chain', () => {
     const board = emptyBoard();
     playMove(board, 3, 0);
     playMove(board, 3, 0);
@@ -60,7 +60,6 @@ describe('heuristics: state evaluation', () => {
     const state = new Connect4State(0, true, board);
     const heuristic = stateHeuristic(state);
     expect(heuristic).toBeGreaterThan(0);
-    expect(heuristic).toBeLessThan(10);
   });
 
 });

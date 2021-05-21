@@ -35,16 +35,16 @@ function createReadlineMock(input: string[], inputEndMessage: string): () => str
 function recordConsoleLog(callback: Function): string[] {
   const outputs: string[] = [];
   const realConsoleLog = console.log;
-  const realConsoleError = console.error;
+  const realConsoleError = console.debug;
 
   try {
     console.log = (output) => outputs.push(output);
-    console.error = () => undefined; // Silence debug traces
+    console.debug = () => undefined; // Silence debug traces
     callback();
 
   } finally {
     console.log = realConsoleLog;
-    console.error = realConsoleError;
+    console.debug = realConsoleError;
   }
 
   return outputs;

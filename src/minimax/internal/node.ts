@@ -21,7 +21,7 @@ export class Node<T, U extends Move> {
 
     const availableMoves = state.availableMoves();
     this.children = availableMoves
-      .sort((a, b) => b[1] - a[1])
+      .sort((a, b) => (state.isOurTurn() ? 1 : -1) * b[1] - a[1])
       .map(([move, _score]) => ({ move }));
 
     this.minimaxValue = state.evaluate();
@@ -29,7 +29,6 @@ export class Node<T, U extends Move> {
     if (parent !== 'root') {
       this.parent = parent;
     }
-
   }
 
   get isLeaf() {
@@ -40,16 +39,24 @@ export class Node<T, U extends Move> {
 }
 
 export function printNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
-  console.error(formatNode(node, offset));
+  console.debug(formatNode(node, offset));
 }
 
 export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0): string {
-  let output = spaces(offset) + '> ' + node.minimaxValue + '\n';
+  let output = spaces(offset) + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.state.isOurTurn()?'P1':'P2') + ' turn \n';
   for (const child of node.children) {
-    output += spaces(offset + 2) + child.move.format() + '\n';
-    output += formatNode(child.node, offset + 4);
+    output += spaces(offset + 2) + '> ' + child.move.format() + '\n';
+    if (child.node) {
+      output += formatNode(child.node, offset + 4);
+    }
   }
   return output;
+}
+
+export function formatMinimax(value: number): string {
+  if (value === Number.MAX_VALUE) return 'WIN';
+  if (value === -Number.MAX_VALUE) return 'LOSS';
+  return value.toPrecision(2);
 }
 
 export function formatMoves<T, U extends Move>(node: Node<T, U>): string {

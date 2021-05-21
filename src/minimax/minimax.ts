@@ -28,16 +28,16 @@ export class Minimax<T, U extends Move> {
 
     for (let i = 0; i < maxIterations; i++) {
       const node = this.explore(root, this.options.maxDepth);
-      if (this.options.printBranches) console.error(formatMoves(node));
+      if (this.options.printBranches) console.debug(formatMoves(node));
       if (node === root) break; // Fully explored
       if (clock.readMillis() >= this.options.timeoutInMs) {
-        if (this.options.printIterationCount) console.error(`Aborting after ${i} iterations`);
+        if (this.options.printIterationCount) console.debug(`Aborting after ${i} iterations`);
         break;
       }
     }
 
     if (this.options.printClock) clock.print();
-    if (this.options.printFinalGraph) console.error(formatNode(root));
+    if (this.options.printFinalGraph) console.debug(formatNode(root));
 
     if (root.children.length === 0) {
       throw new Error('no possible moves');

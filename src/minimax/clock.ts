@@ -21,7 +21,7 @@ export class Clock {
   }
 
   print(): void {
-    console.error(this.readString());
+    console.debug(this.readString());
   }
 
 }

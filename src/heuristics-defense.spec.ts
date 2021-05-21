@@ -3,7 +3,6 @@ import Connect4State, { Connect4Board, Connect4Move } from "./model/connect4stat
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
 import playMoves from "./utils/playMoves";
-import printBoard from "./utils/printBoard";
 
 describe('heuristics: defense', () => {
 
@@ -20,10 +19,16 @@ describe('heuristics: defense', () => {
     expect(bestMove.column).toBe(3);
   });
 
-  fit('should avoid a losing move #2', () => {
+  it('should avoid a losing move #2', () => {
+    // .........
+    // .........
+    // .........
+    // .........
+    // .........
+    // ...1.11..
+    // ...00100.
     const board = emptyBoard();
     playMoves(board, [3, 3, 4, 5, 6, 5, 7, 6]);
-    printBoard(board);
 
     const state = new Connect4State(0, true, board);
     const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });
@@ -35,15 +40,22 @@ describe('heuristics: defense', () => {
   });
 
   it('should avoid a losing move #3', () => {
+    // .........
+    // ...1.....
+    // ...1.....
+    // ...1.....
+    // ...0.....
+    // ...1.....
+    // .0.0..00.
     const board = emptyBoard();
     playMoves(board, [3, 3, 3, 3, 1, 3, 7, 3, 6]);
 
-    const state = new Connect4State(0, true, board);
-    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });
+    const state = new Connect4State(0, true, board, undefined, { restrictMoves: [3, 4, 5] });
+    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2, printFinalGraph: true });
 
     for (let i = 0; i < 10; i++) {
       const bestMove = minimax.searchBestMove(state);
-      expect(bestMove.column).toBe(4);
+      expect(bestMove.column).toBe(3);
     }
   });
 

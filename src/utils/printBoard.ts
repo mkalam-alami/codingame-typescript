@@ -8,5 +8,5 @@ export default function printBoard(board: Connect4Board) {
     else line += cell;
     if (index % COLUMNS === COLUMNS - 1) { output += line + '\n'; line = ''; }
   })
-  console.error(output);
+  console.debug(output);
 }
