@@ -3,12 +3,11 @@ import { State } from '../state';
 
 export interface MoveNode<T, U extends Move> {
   move: U;
-  node: Node<T, U>;
+  node?: Node<T, U>;
 }
 
 export class Node<T, U extends Move> {
 
-  availableMoves: U[];
   minimaxValue: number;
   isFullyExplored = false;
 
@@ -18,13 +17,21 @@ export class Node<T, U extends Move> {
   constructor(
     public state: State<T, U>,
     parent: Node<T, U> | 'root',
-    initialMinimaxValue: number,
     public lastMove: U | 'root') {
-    this.availableMoves = state.availableMoves();
-    this.minimaxValue = initialMinimaxValue;
+
+    const availableMoves = state.availableMoves();
+
+    this.children = availableMoves
+      .sort((a, b) => b[1] - a[1])
+      .map(([move, _score]) => ({ move }));
+
+    const availableScores = availableMoves.map(m => m[1]);
+    this.minimaxValue = state.isOurTurn() ? Math.max(...availableScores) : Math.min(...availableScores);
+
     if (parent !== 'root') {
       this.parent = parent;
     }
+
   }
 
   get isLeaf() {

@@ -1,8 +1,8 @@
 import { Clock } from "./clock";
 import { formatMoves, formatNode, MoveNode, Node } from "./internal/node";
 import pickWeighedRandom from "./internal/pickRandom";
-import { Move, MoveHeuristic } from "./move";
-import { State, StateHeuristic } from "./state";
+import { Move } from "./move";
+import { State } from "./state";
 
 export interface MinimaxOptions {
   timeoutInMs: number;
@@ -19,20 +19,17 @@ export class Minimax<T, U extends Move> {
 
   // TODO Implement board caching by hash, reusable across multiple runs
 
-  constructor(
-    private stateHeuristic: StateHeuristic<T, U>,
-    private moveHeuristic: MoveHeuristic<T, U>,
-    private options: Partial<MinimaxOptions> = {}) {
-  }
+  constructor(private options: Partial<MinimaxOptions> = {}) { }
 
   searchBestMove(rootState: State<T, U>): U {
     const clock = new Clock();
-    const root = new Node(rootState, 'root', this.stateHeuristic(rootState), undefined);
+    const root = new Node(rootState, 'root', undefined);
     const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
-    for (let i = 0; i < maxIterations; i++) { // TODO Explore more intelligently
+    for (let i = 0; i < maxIterations; i++) {
       const node = this.explore(root, this.options.maxDepth);
       if (this.options.printBranches) console.error(formatMoves(node));
+      if (node === root) break; // Fully explored
       if (clock.readMillis() >= this.options.timeoutInMs) {
         if (this.options.printIterationCount) console.error(`Aborting after ${i} iterations`);
         break;
@@ -43,35 +40,32 @@ export class Minimax<T, U extends Move> {
     if (this.options.printFinalGraph) console.error(formatNode(root));
 
     if (root.children.length === 0) {
-      console.error('ERROR: no children explored');
-      return root.availableMoves[0];
+      throw new Error('no possible moves');
     }
 
     const bestChild = root.children.reduce((a, b) => {
-      if (b.node.minimaxValue === undefined) return a;
-      if (a.node.minimaxValue === undefined) return b;
+      if (b.node?.minimaxValue === undefined) return a;
+      if (a.node?.minimaxValue === undefined) return b;
       return b.node.minimaxValue > a.node.minimaxValue ? b : a;
     });
     return bestChild.move;
   }
 
   private explore(node: Node<T, U>, maxDepth?: number): Node<T, U> {
-    if (node.isLeaf || maxDepth === 0) {
+    const unexploredChildren = node.children.filter(c => !(c.node?.isFullyExplored));
+    if (node.isLeaf || maxDepth === 0 || unexploredChildren.length === 0) {
       node.isFullyExplored = true;
       this.aggregateValue(node);
       return node;
     }
 
-    const exploreMove = pickWeighedRandom(node.availableMoves, 1); // TODO ignore fully explored. Refactor to combine availableMoves vs. children, sort them to use weighted pick
+    const exploreChild = pickWeighedRandom(unexploredChildren, 3);
+    const exploreMove = exploreChild.move;
 
     let child: MoveNode<T, U> = node.children.find(c => c.move === exploreMove);
-    if (!child) {
+    if (!child.node) {
       const forkedState = node.state.fork(exploreMove); // Debug: require('@/utils/printBoard').default(forkedState.board)
-      child = {
-        move: exploreMove,
-        node: new Node(forkedState, node, this.stateHeuristic(forkedState), exploreMove),
-      };
-      node.children.push(child);
+      child.node = new Node(forkedState, node, exploreMove);
     }
 
     if (!child.node.isFullyExplored) {
@@ -90,13 +84,12 @@ export class Minimax<T, U extends Move> {
 
       const minMaxFunc = currentNode.state.isOurTurn() ? Math.max : Math.min;
       currentNode.minimaxValue = currentNode.children
+        .filter(child => child.node)
         .map(child => child.node.minimaxValue)
         .reduce((a, b) => minMaxFunc(a, b));
       if (isFullyExploredUpToNow) {
         isFullyExploredUpToNow =
-          currentNode.isFullyExplored =
-          currentNode.children.length === currentNode.availableMoves.length
-          && !currentNode.children.find(n => !n.node.isFullyExplored);
+          currentNode.isFullyExplored = !currentNode.children.find(n => !(n.node?.isFullyExplored));
       }
     }
   }

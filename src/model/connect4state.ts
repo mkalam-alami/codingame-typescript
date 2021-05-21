@@ -1,3 +1,4 @@
+import { moveHeuristic, stateHeuristic } from "@/heuristics";
 import playMove from "@/utils/playMove";
 import { Move } from "../minimax/move";
 import { State } from "../minimax/state";
@@ -26,7 +27,8 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
   constructor(
     public readonly ourPlayerIndex: number,
     private _isOurTurn: boolean,
-    private board: Connect4Board) { }
+    private board: Connect4Board,
+    private options: { restrictMoves?: number[] } = {}) { }
 
   get() {
     return this.board;
@@ -36,9 +38,14 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
     return this._isOurTurn;
   }
 
-  availableMoves(): Connect4Move[] {
-    // return [new Connect4Move(2),new Connect4Move(3)];
-    return DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1);
+  availableMoves(): [Connect4Move, number][] {
+    const validMoves = DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1)
+      .map<[Connect4Move, number]>(move => [move, moveHeuristic(move, this)]);
+
+    if (this.options.restrictMoves) {
+      return validMoves.filter(m => this.options.restrictMoves.includes(m[0].column));
+    }
+    return validMoves;
   }
 
   fork(move: Connect4Move): Connect4State {
@@ -46,6 +53,10 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
     const newCellValue = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex)) as Connect4Cell;
     playMove(forkedBoard, move.column, newCellValue);
     return new Connect4State(this.ourPlayerIndex, !this._isOurTurn, forkedBoard);
+  }
+
+  evaluate() {
+    return stateHeuristic(this);
   }
 
 }

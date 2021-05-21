@@ -7,12 +7,14 @@ export interface State<T, U extends Move> {
   isOurTurn(): boolean;
 
   /**
-   * Returns the list of all available (and interesting) moves for the current player.
+   * Returns the list of all available (and interesting) moves for the current player, and their heuristic evaluations.
    * Return an empty list if the game is over.
    */
-  availableMoves(): U[];
+  availableMoves(): [U, number][];
 
   fork(move: U): State<T, U>;
+
+  evaluate(): number;
 
 }
 

@@ -1,6 +1,5 @@
-import { moveHeuristic, stateHeuristic } from "@/heuristics";
 import { Minimax } from "@/minimax/minimax";
-import Connect4State, { COLUMNS } from "@/model/connect4state";
+import Connect4State, { COLUMNS, Connect4Board, Connect4Move } from "@/model/connect4state";
 import emptyBoard from "@/utils/emptyBoard";
 import playMoves from "@/utils/playMoves";
 import printBoard from "@/utils/printBoard";
@@ -11,13 +10,13 @@ printBoard(board);
 
 let bestMoves: number[] = [];
 
-for (let i = 0; i < 20; i++) {
-
-  const state = new Connect4State(0, true, board);
-  const minimax = new Minimax(stateHeuristic, moveHeuristic, {
+for (let i = 0; i < 1; i++) {
+  const state = new Connect4State(0, true, board, { restrictMoves: [2,3] });
+  const minimax = new Minimax<Connect4Board, Connect4Move>({
     maxDepth: 2,
-    timeoutInMs: 70,
-    printBranches: false,
+    maxIterations: 10,
+    //timeoutInMs: 70,
+    printBranches: true,
     printFinalGraph: false,
     //printIterationCount: true
   });
