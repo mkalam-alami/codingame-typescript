@@ -1,4 +1,4 @@
-import { Connect4Board, Connect4Cell, Connect4Move } from "@/model/state";
+import { Connect4Board, Connect4Cell, Connect4Move } from "@/model/connect4state";
 import { setCellAtUnsafe } from "./cellAt";
 import fallingRow from "./fallingRow";
 

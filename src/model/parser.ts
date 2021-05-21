@@ -1,4 +1,4 @@
-import Connect4State, { Connect4Board } from "./state";
+import Connect4State, { Connect4Board } from "./connect4state";
 
 export function parseIsFirstPlayer(): boolean {
   return readline() === '0';

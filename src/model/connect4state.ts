@@ -1,8 +1,7 @@
-import { getCellAt, setCellAt } from "../utils/cellAt";
-import { Move } from "../search/move";
-import { State } from "../search/state";
-import fallingRow from "@/utils/fallingRow";
 import playMove from "@/utils/playMove";
+import { Move } from "../minimax/move";
+import { State } from "../minimax/state";
+import { getCellAt } from "../utils/cellAt";
 
 export const ROWS = 8;
 export const COLUMNS = 9;
@@ -38,6 +37,7 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
   }
 
   availableMoves(): Connect4Move[] {
+    // return [new Connect4Move(2),new Connect4Move(3)];
     return DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1);
   }
 

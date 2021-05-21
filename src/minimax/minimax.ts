@@ -1,6 +1,6 @@
 import { Clock } from "./clock";
 import { MoveNode, Node, formatNode } from "./internal/node";
-import pickRandom from "./internal/pickRandom";
+import pickWeightedRandom from "./internal/pickRandom";
 import { Move, MoveHeuristic } from "./move";
 import { State, StateHeuristic } from "./state";
 
@@ -22,9 +22,9 @@ export class Minimax<T, U extends Move> {
 
   searchBestMove(rootState: State<T, U>, options: { printGraph?: boolean } = {}): U {
     const clock = new Clock();
-    const root = new Node(rootState);
+    const root = new Node(rootState, 'root');
 
-    for (let i = 0; i < 100; i++) { // TODO Explore more intelligently
+    for (let i = 0; i < 1000; i++) { // TODO Explore more intelligently
       this.explore(root, this.options.maxDepth);
       if (clock.readMillis() >= this.options.searchTimeoutInMs) {
         break;
@@ -32,7 +32,7 @@ export class Minimax<T, U extends Move> {
     }
 
     if (options.printGraph) {
-      clock.print();
+      // clock.print();
       formatNode(root);
     }
 
@@ -41,7 +41,11 @@ export class Minimax<T, U extends Move> {
       return root.availableMoves[0];
     }
 
-    const bestChild = root.children.reduce((a, b) => b.node.minimaxValue > a.node.minimaxValue ? a : b);
+    const bestChild = root.children.reduce((a, b) => {
+      if (b.node.minimaxValue === undefined) return a;
+      if (a.node.minimaxValue === undefined) return b;
+      return b.node.minimaxValue > a.node.minimaxValue ? b : a;
+    });
     return bestChild.move;
   }
 
@@ -53,14 +57,14 @@ export class Minimax<T, U extends Move> {
       return;
     }
 
-    const exploreMove = pickRandom(node.availableMoves); // TODO Ponderate by move heuristic, ignore fully explored. Maybe refactor to combine availableMoves vs. children
+    const exploreMove = pickWeightedRandom(node.availableMoves, 1); // TODO ignore fully explored. Refactor to combine availableMoves vs. children, sort them to use weighted pick
 
     let child: MoveNode<T, U> = node.children.find(c => c.move === exploreMove);
     if (!child) {
-      const forkedState = node.state.fork(exploreMove);
+      const forkedState = node.state.fork(exploreMove); // Debug: require('@/utils/printBoard').default(forkedState.board)
       child = {
         move: exploreMove,
-        node: new Node(forkedState)
+        node: new Node(forkedState, node),
       };
       node.children.push(child);
     }
@@ -75,16 +79,17 @@ export class Minimax<T, U extends Move> {
     let isFullyExploredUpToNow = true;
 
     while (currentNode.parent) {
-      const parent = currentNode.parent;
-      const minMaxFunc = parent.state.isOurTurn() ? Math.min : Math.max;
-      parent.minimaxValue = parent.children
+      currentNode = currentNode.parent;
+
+      const minMaxFunc = currentNode.state.isOurTurn() ? Math.max : Math.min;
+      currentNode.minimaxValue = currentNode.children
         .map(child => child.node.minimaxValue)
         .reduce((a, b) => minMaxFunc(a, b));
       if (isFullyExploredUpToNow) {
         isFullyExploredUpToNow =
-          parent.isFullyExplored =
-          parent.children.length === parent.availableMoves.length
-          && !parent.children.find(n => !n.node.isFullyExplored);
+          currentNode.isFullyExplored =
+          currentNode.children.length === currentNode.availableMoves.length
+          && !currentNode.children.find(n => !n.node.isFullyExplored);
       }
     }
   }

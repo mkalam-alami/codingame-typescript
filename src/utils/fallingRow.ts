@@ -1,4 +1,4 @@
-import { Connect4Board, ROWS } from "@/model/state";
+import { Connect4Board, ROWS } from "@/model/connect4state";
 import { getCellAt } from "./cellAt";
 
 /**

@@ -1,7 +1,7 @@
-import Connect4State, { COLUMNS, Connect4Board, Connect4Move, EMPTY, ROWS } from "./model/state";
-import { Minimax } from "./search/minimax";
-import { MoveHeuristic } from "./search/move";
-import { StateHeuristic } from "./search/state";
+import Connect4State, { COLUMNS, Connect4Board, Connect4Move, EMPTY, ROWS } from "./model/connect4state";
+import { Minimax } from "./minimax/minimax";
+import { MoveHeuristic } from "./minimax/move";
+import { StateHeuristic } from "./minimax/state";
 import { getCellAt, getCellAtUnsafe } from "./utils/cellAt";
 import chainLength from "./utils/chainLength";
 import fallingRow from "./utils/fallingRow";
@@ -55,6 +55,6 @@ export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (stat
   return heuristic;
 }
 
-export const connect4minimax = new Minimax(stateHeuristic, moveHeuristic, { maxDepth: 10 });
+export const connect4minimax = new Minimax(stateHeuristic, moveHeuristic, { maxDepth: 6 });
 
 export default connect4minimax;

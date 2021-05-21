@@ -1,12 +1,12 @@
-import { moveHeuristic, stateHeuristic } from "./minimax";
-import Connect4State from "./model/state";
-import { Minimax } from "./search/minimax";
+import { moveHeuristic, stateHeuristic } from "./heuristics";
+import { Minimax } from "./minimax/minimax";
+import Connect4State from "./model/connect4state";
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
 
-describe('minimax functions', () => {
+describe('heuristics', () => {
 
-  describe('heuristics', () => {
+  describe('combined', () => {
 
     fit('should block a losing move from the opponent', () => {
       const board = emptyBoard();

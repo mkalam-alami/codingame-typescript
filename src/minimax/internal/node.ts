@@ -16,10 +16,13 @@ export class Node<T, U extends Move> {
   parent?: Node<T, U>;
   children: Array<MoveNode<T, U>> = [];
 
-  constructor(state: State<T, U>) {
+  constructor(state: State<T, U>, parent: Node<T, U> | 'root') {
     this.state = state;
     this.availableMoves = state.availableMoves();
     this.minimaxValue = state.isOurTurn() ? Number.MIN_VALUE : Number.MAX_VALUE;
+    if (parent !== 'root') {
+      this.parent = parent;
+    }
   }
 
   get isLeaf() {

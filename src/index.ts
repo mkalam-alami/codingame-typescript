@@ -1,4 +1,4 @@
-import connect4minimax from "./minimax";
+import connect4minimax from "./heuristics";
 import { parseIsFirstPlayer, parseState } from "./model/parser";
 
 const isFirstPlayer = parseIsFirstPlayer();

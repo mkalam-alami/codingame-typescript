@@ -1,4 +1,4 @@
-import { Connect4Board, Coords } from "@/model/state";
+import { Connect4Board, Coords } from "@/model/connect4state";
 import { getCellAt, getCellAtUnsafe, isValidCell } from "./cellAt";
 import { Offset } from "./neighborOffsets";
 

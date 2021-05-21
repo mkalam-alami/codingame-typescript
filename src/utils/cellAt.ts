@@ -1,4 +1,4 @@
-import { COLUMNS, Connect4Board, Connect4Cell, ROWS } from "../model/state";
+import { COLUMNS, Connect4Board, Connect4Cell, ROWS } from "../model/connect4state";
 
 export function isValidCell(column: number, row: number): boolean {
   return column >= 0 && row >= 0 && column < COLUMNS && row < ROWS;

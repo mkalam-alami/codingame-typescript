@@ -1,4 +1,4 @@
-import { COLUMNS, Connect4Board } from "@/model/state";
+import { COLUMNS, Connect4Board } from "@/model/connect4state";
 
 export default function printBoard(board: Connect4Board) {
   let output = '';
