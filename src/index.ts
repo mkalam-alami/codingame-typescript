@@ -1,4 +1,5 @@
 import connect4minimax from "./heuristics";
+import { Connect4Move } from "./model/connect4state";
 import { parseIsFirstPlayer, parseState } from "./model/parser";
 
 const isFirstPlayer = parseIsFirstPlayer();
@@ -8,15 +9,14 @@ while (true) {
     const [state, oppPreviousMove] = parseState(isFirstPlayer);
     if (oppPreviousMove !== -1) moveHistory.push(oppPreviousMove);
 
-    if (moveHistory.length > 1) {
-        const move = connect4minimax.searchBestMove(state);
-        moveHistory.push(move.column);
-        console.log(move.column);
-
-        // First move
-    } else if (moveHistory.length === 0) {
-        console.log(moveHistory[0] === 4 ? 5 : 4);
+    let move: Connect4Move;
+    if (moveHistory.length <= 1) {
+        move = moveHistory[0] === 4 ? new Connect4Move(5) : new Connect4Move(4); // First move
     } else {
-        console.log(4);
+        move = connect4minimax.searchBestMove(state);
     }
+
+    console.error(moveHistory);
+    console.log(move.column);
+    moveHistory.push(move.column);
 }

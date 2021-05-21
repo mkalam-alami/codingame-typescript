@@ -94,4 +94,5 @@ describe('heuristics: defense', () => {
       expect(bestMove.column).toBe(0);
     }
   });
+
 });
