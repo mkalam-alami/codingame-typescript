@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { Clock } from "./clock";
-import { formatMoves, formatNode, MoveNode, Node } from "./internal/node";
+import { formatMoves, formatNode, Node } from "./internal/node";
 import pickWeighedRandom from "./internal/pickRandom";
 import { Move } from "./move";
 import { State } from "./state";
@@ -24,7 +24,7 @@ export class Minimax<T, U extends Move> {
 
   searchBestMove(rootState: State<T, U>): U {
     const clock = new Clock();
-    const root = new Node(rootState, 'root', undefined);
+    const root = new Node(rootState, 'root', 'root');
     const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
     for (let i = 0; i < maxIterations; i++) {
@@ -49,34 +49,27 @@ export class Minimax<T, U extends Move> {
     }
 
     const bestChild = root.children.reduce((a, b) => {
-      if (b.node?.minimaxValue === undefined) return a;
-      if (a.node?.minimaxValue === undefined) return b;
-      return b.node.minimaxValue > a.node.minimaxValue ? b : a;
+      if (b.minimaxValue === undefined) return a;
+      if (a.minimaxValue === undefined) return b;
+      return b.minimaxValue > a.minimaxValue ? b : a;
     });
-    return bestChild.move;
+    return bestChild.lastMove;
   }
 
   private explore(node: Node<T, U>, maxDepth?: number): Node<T, U> {
-    const unexploredChildren = node.children.filter(c => !(c.node?.isFullyExplored));
+    node.initChildren();
+    const unexploredChildren = node.children.filter(c => !(c.isFullyExplored));
     if (node.isLeaf || maxDepth === 0 || unexploredChildren.length === 0) {
       node.isFullyExplored = true;
       this.aggregateValue(node);
       return node;
     }
 
-    const exploreChild = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
-    const exploreMove = exploreChild.move;
-
-    let child: MoveNode<T, U> = node.children.find(c => c.move === exploreMove);
-    if (!child.node) {
-      const forkedState = node.state.fork(exploreMove); // Debug: require('@/utils/printBoard').default(forkedState.board)
-      child.node = new Node(forkedState, node, exploreMove);
-    }
-
-    if (!child.node.isFullyExplored) {
-      return this.explore(child.node, maxDepth ? maxDepth - 1 : undefined);
+    const child = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
+    if (!child.isFullyExplored) {
+      return this.explore(child, maxDepth ? maxDepth - 1 : undefined);
     } else {
-      return child.node;
+      return child;
     }
   }
 
@@ -89,12 +82,11 @@ export class Minimax<T, U extends Move> {
 
       const minMaxFunc = currentNode.state.isOurTurn() ? Math.max : Math.min;
       currentNode.minimaxValue = currentNode.children
-        .filter(child => child.node)
-        .map(child => child.node.minimaxValue)
+        .map(child => child.minimaxValue)
         .reduce((a, b) => minMaxFunc(a, b), currentNode.minimaxValue);
       if (isFullyExploredUpToNow) {
         isFullyExploredUpToNow =
-          currentNode.isFullyExplored = !currentNode.children.find(n => !(n.node?.isFullyExplored));
+          currentNode.isFullyExplored = !currentNode.children.find(n => !n.isFullyExplored);
       }
     }
   }

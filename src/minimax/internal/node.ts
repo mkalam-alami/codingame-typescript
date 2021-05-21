@@ -1,34 +1,29 @@
 import { Move } from '../move';
 import { State } from '../state';
 
-export interface MoveNode<T, U extends Move> {
-  move: U;
-  node?: Node<T, U>;
-}
-
 export class Node<T, U extends Move> {
 
   minimaxValue: number;
   isFullyExplored = false;
 
+  lastMove?: U;
   parent?: Node<T, U>;
-  children: Array<MoveNode<T, U>> = [];
+  children?: Array<Node<T, U>>;
 
   constructor(
     public state: State<T, U>,
     parent: Node<T, U> | 'root',
-    public lastMove: U | 'root') {
-
-    const availableMoves = state.availableMoves();
-    this.children = availableMoves
-      .map<[U, number]>((move) => [move, state.fork(move).evaluate()])
-      .sort((a, b) => (state.isOurTurn() ? 1 : -1) * b[1] - a[1])
-      .map(([move, _score]) => ({ move }));
-
+    lastMove: U | 'root') {
     this.minimaxValue = state.evaluate();
+    if (parent !== 'root') this.parent = parent;
+    if (lastMove !== 'root') this.lastMove = lastMove;
+  }
 
-    if (parent !== 'root') {
-      this.parent = parent;
+  initChildren() {
+    if (!this.children) {
+      this.children = this.state.availableMoves()
+        .map((move) => new Node(this.state.fork(move), this, move))
+        .sort((a, b) => (this.state.isOurTurn() ? 1 : -1) * b.minimaxValue - a.minimaxValue);
     }
   }
 
@@ -44,11 +39,10 @@ export function printNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
 }
 
 export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0): string {
-  let output = spaces(offset) + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.state.isOurTurn()?'P1':'P2') + ' turn \n';
-  for (const child of node.children) {
-    output += spaces(offset + 2) + '> ' + child.move.format() + '\n';
-    if (child.node) {
-      output += formatNode(child.node, offset + 4);
+  let output = spaces(offset) + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.lastMove?.format() || 'ROOT') + ' ' + (node.state.isOurTurn() ? 'P1' : 'P2') + ' turn \n';
+  if (node.children) {
+    for (const child of node.children) {
+      output += formatNode(child, offset + 4);
     }
   }
   return output;
@@ -63,7 +57,7 @@ export function formatMinimax(value: number): string {
 export function formatMoves<T, U extends Move>(node: Node<T, U>): string {
   let output = `[${node.minimaxValue}]`;
   while (node.parent) {
-    output = (node.lastMove === 'root' ? 'root' : node.lastMove.format()) + ' > ' + output
+    output = (node.lastMove ? node.lastMove.format() + ' > ' : '') + output
     node = node.parent;
   }
   return output;
