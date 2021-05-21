@@ -3,6 +3,7 @@ import Connect4State, { Connect4Board, Connect4Move } from "./model/connect4stat
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
 import playMoves from "./utils/playMoves";
+import printBoard from "./utils/printBoard";
 
 describe('heuristics: defense', () => {
 
@@ -19,15 +20,10 @@ describe('heuristics: defense', () => {
     expect(bestMove.column).toBe(3);
   });
 
-  it('should avoid a losing move #2', () => {
+  fit('should avoid a losing move #2', () => {
     const board = emptyBoard();
-    playMove(board, 3, 0);
-    playMove(board, 4, 0);
-    playMove(board, 5, 1);
-    playMove(board, 6, 0);
-    playMove(board, 3, 1);
-    playMove(board, 5, 1);
-    playMove(board, 6, 1);
+    playMoves(board, [3, 3, 4, 5, 6, 5, 7, 6]);
+    printBoard(board);
 
     const state = new Connect4State(0, true, board);
     const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });

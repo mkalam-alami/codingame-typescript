@@ -20,13 +20,11 @@ export class Node<T, U extends Move> {
     public lastMove: U | 'root') {
 
     const availableMoves = state.availableMoves();
-
     this.children = availableMoves
       .sort((a, b) => b[1] - a[1])
       .map(([move, _score]) => ({ move }));
 
-    const availableScores = availableMoves.map(m => m[1]);
-    this.minimaxValue = state.isOurTurn() ? Math.max(...availableScores) : Math.min(...availableScores);
+    this.minimaxValue = state.evaluate();
 
     if (parent !== 'root') {
       this.parent = parent;

@@ -7,7 +7,7 @@ import { State } from "./state";
 export interface MinimaxOptions {
   timeoutInMs: number;
   maxDepth: number;
-  moveRandomization: number; // TODO Implement randomization config
+  moveRandomization: number;
   maxIterations: number;
   printIterationCount: boolean;
   printClock: boolean;
@@ -59,7 +59,7 @@ export class Minimax<T, U extends Move> {
       return node;
     }
 
-    const exploreChild = pickWeighedRandom(unexploredChildren, 3);
+    const exploreChild = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
     const exploreMove = exploreChild.move;
 
     let child: MoveNode<T, U> = node.children.find(c => c.move === exploreMove);
@@ -86,7 +86,7 @@ export class Minimax<T, U extends Move> {
       currentNode.minimaxValue = currentNode.children
         .filter(child => child.node)
         .map(child => child.node.minimaxValue)
-        .reduce((a, b) => minMaxFunc(a, b));
+        .reduce((a, b) => minMaxFunc(a, b), currentNode.minimaxValue);
       if (isFullyExploredUpToNow) {
         isFullyExploredUpToNow =
           currentNode.isFullyExplored = !currentNode.children.find(n => !(n.node?.isFullyExplored));

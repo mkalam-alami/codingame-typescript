@@ -5,19 +5,20 @@ import playMoves from "@/utils/playMoves";
 import printBoard from "@/utils/printBoard";
 
 const board = emptyBoard();
-playMoves(board, [0, 0, 3, 3, 0, 3, 7, 3]);
+playMoves(board, [3, 3, 4, 5, 6, 5, 7, 6]);
 printBoard(board);
 
 let bestMoves: number[] = [];
 
-for (let i = 0; i < 1; i++) {
-  const state = new Connect4State(0, true, board, { restrictMoves: [2,3] });
+for (let i = 0; i < 20; i++) {
+  const state = new Connect4State(0, true, board); //, undefined, { restrictMoves: [3,4]});
   const minimax = new Minimax<Connect4Board, Connect4Move>({
     maxDepth: 2,
-    maxIterations: 10,
+    timeoutInMs: 70,
+    //maxIterations: 10,
     //timeoutInMs: 70,
-    printBranches: true,
-    printFinalGraph: false,
+    //printBranches: true,
+    //printFinalGraph: false,
     //printIterationCount: true
   });
   const bestMove = minimax.searchBestMove(state);
