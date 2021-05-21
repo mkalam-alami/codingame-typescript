@@ -50,7 +50,7 @@ function heuristicAtCoords(state: Connect4State, coords: Coords, checkOffsets: O
 }
 
 export const connect4minimax = new Minimax<Connect4Board, Connect4Move>({
-  maxDepth: 6,
+  maxDepth: 5,
   // maxIterations: 1000,
   printClock: true,
   timeoutInMs: 80,
