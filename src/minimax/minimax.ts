@@ -1,13 +1,16 @@
 import { Clock } from "./clock";
-import { MoveNode, Node, formatNode } from "./internal/node";
-import pickWeightedRandom from "./internal/pickRandom";
+import { formatMoves, formatNode, MoveNode, Node } from "./internal/node";
+import pickWeighedRandom from "./internal/pickRandom";
 import { Move, MoveHeuristic } from "./move";
 import { State, StateHeuristic } from "./state";
 
 export interface MinimaxOptions {
-  searchTimeoutInMs: number;
+  timeoutInMs: number;
   maxDepth: number;
   moveRandomization: number; // TODO Implement randomization config
+  maxIterations: number;
+  printIterationCount: boolean;
+  printClock: boolean;
 }
 
 export class Minimax<T, U extends Move> {
@@ -20,21 +23,22 @@ export class Minimax<T, U extends Move> {
     private options: Partial<MinimaxOptions> = {}) {
   }
 
-  searchBestMove(rootState: State<T, U>, options: { printGraph?: boolean } = {}): U {
+  searchBestMove(rootState: State<T, U>, options: { printFinalGraph?: boolean; printBranches?: boolean } = {}): U {
     const clock = new Clock();
-    const root = new Node(rootState, 'root');
+    const root = new Node(rootState, 'root', this.stateHeuristic(rootState), undefined);
+    const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
-    for (let i = 0; i < 1000; i++) { // TODO Explore more intelligently
-      this.explore(root, this.options.maxDepth);
-      if (clock.readMillis() >= this.options.searchTimeoutInMs) {
+    for (let i = 0; i < maxIterations; i++) { // TODO Explore more intelligently
+      const node = this.explore(root, this.options.maxDepth);
+      if (options.printBranches) console.error(formatMoves(node));
+      if (clock.readMillis() >= this.options.timeoutInMs) {
+        if (this.options.printIterationCount) console.error(`Aborting after ${i} iterations`);
         break;
       }
     }
 
-    if (options.printGraph) {
-      // clock.print();
-      formatNode(root);
-    }
+    if (this.options.printClock) clock.print();
+    if (options.printFinalGraph) console.error(formatNode(root));
 
     if (root.children.length === 0) {
       console.error('ERROR: no children explored');
@@ -49,28 +53,29 @@ export class Minimax<T, U extends Move> {
     return bestChild.move;
   }
 
-  private explore(node: Node<T, U>, maxDepth?: number) {
+  private explore(node: Node<T, U>, maxDepth?: number): Node<T, U> {
     if (node.isLeaf || maxDepth === 0) {
-      node.minimaxValue = this.stateHeuristic(node.state);
       node.isFullyExplored = true;
       this.aggregateValue(node);
-      return;
+      return node;
     }
 
-    const exploreMove = pickWeightedRandom(node.availableMoves, 1); // TODO ignore fully explored. Refactor to combine availableMoves vs. children, sort them to use weighted pick
+    const exploreMove = pickWeighedRandom(node.availableMoves, 1); // TODO ignore fully explored. Refactor to combine availableMoves vs. children, sort them to use weighted pick
 
     let child: MoveNode<T, U> = node.children.find(c => c.move === exploreMove);
     if (!child) {
       const forkedState = node.state.fork(exploreMove); // Debug: require('@/utils/printBoard').default(forkedState.board)
       child = {
         move: exploreMove,
-        node: new Node(forkedState, node),
+        node: new Node(forkedState, node, this.stateHeuristic(forkedState), exploreMove),
       };
       node.children.push(child);
     }
 
     if (!child.node.isFullyExplored) {
-      this.explore(child.node, maxDepth ? maxDepth - 1 : undefined);
+      return this.explore(child.node, maxDepth ? maxDepth - 1 : undefined);
+    } else {
+      return child.node;
     }
   }
 

@@ -7,11 +7,12 @@ export default function chainLength(start: Coords, direction: Offset, board: Con
   let expected = getCellAtUnsafe(board, start.column, start.row);
   let length = 1;
 
-  while (getCellAt(board, coords.column, coords.row) === expected && length++ < 3) {
-    coords = { column: coords.column + direction.dx, row: coords.row + direction.dy };
-  }
-  if (isValidCell(coords.column, coords.row) && length === 3) {
+  while (getCellAt(board, coords.column, coords.row) === expected) {
     length++;
+    if (length === 4) {
+      break;
+    }
+    coords = { column: coords.column + direction.dx, row: coords.row + direction.dy };
   }
 
   return length;

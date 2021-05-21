@@ -8,7 +8,6 @@ export interface MoveNode<T, U extends Move> {
 
 export class Node<T, U extends Move> {
 
-  state: State<T, U>;
   availableMoves: U[];
   minimaxValue: number;
   isFullyExplored = false;
@@ -16,17 +15,21 @@ export class Node<T, U extends Move> {
   parent?: Node<T, U>;
   children: Array<MoveNode<T, U>> = [];
 
-  constructor(state: State<T, U>, parent: Node<T, U> | 'root') {
-    this.state = state;
+  constructor(
+    public state: State<T, U>,
+    parent: Node<T, U> | 'root',
+    initialMinimaxValue: number,
+    public lastMove: U | 'root') {
     this.availableMoves = state.availableMoves();
-    this.minimaxValue = state.isOurTurn() ? Number.MIN_VALUE : Number.MAX_VALUE;
+    this.minimaxValue = initialMinimaxValue;
     if (parent !== 'root') {
       this.parent = parent;
     }
   }
 
   get isLeaf() {
-    return this.availableMoves.length === 0;
+    return this.minimaxValue === Number.MAX_VALUE
+      || this.minimaxValue === -Number.MAX_VALUE;
   }
 
 }
@@ -35,13 +38,22 @@ export function printNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
   console.error(formatNode(node, offset));
 }
 
-export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0) {
-  let lines = spaces(offset) + '> ' + node.minimaxValue + '\n';
+export function formatNode<T, U extends Move>(node: Node<T, U>, offset = 0): string {
+  let output = spaces(offset) + '> ' + node.minimaxValue + '\n';
   for (const child of node.children) {
-    lines += spaces(offset + 2) + child.move.format() + '\n';
-    lines += formatNode(child.node, offset + 4);
+    output += spaces(offset + 2) + child.move.format() + '\n';
+    output += formatNode(child.node, offset + 4);
   }
-  return lines;
+  return output;
+}
+
+export function formatMoves<T, U extends Move>(node: Node<T, U>): string {
+  let output = `[${node.minimaxValue}]`;
+  while (node.parent) {
+    output = (node.lastMove === 'root' ? 'root' : node.lastMove.format()) + ' > ' + output
+    node = node.parent;
+  }
+  return output;
 }
 
 function spaces(count: number) {
