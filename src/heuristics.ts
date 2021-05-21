@@ -12,38 +12,32 @@ const FULL_PASS_NEIGHBOR_OFFSETS: Offset[] = [
   { dx: 1, dy: 1 }
 ];
 
+// TODO Only compute heuristic at empty cells?
+// TODO (Optimize) Holding heuristic at coords locally per cell (fraction?) to avoid full pass
 export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (state: Connect4State): number => {
   let heuristic = 0;
 
-  // if (state.lastTouchedCell) {
-  //   const partialHeuristic = heuristicAtCoords(state, state.lastTouchedCell, NEIGHBOR_OFFSETS);
-  //   if (partialHeuristic === Number.MAX_VALUE || partialHeuristic === -Number.MAX_VALUE) return partialHeuristic;
-  //   heuristic += partialHeuristic;
-
-  // } else {
   for (let row = 0; row < ROWS; row++) {
     for (let column = 0; column < COLUMNS; column++) {
-      const partialHeuristic = heuristicAtCoords(state, { column, row }, FULL_PASS_NEIGHBOR_OFFSETS);
+      const partialHeuristic = heuristicAtCoords(state.get(), state.ourPlayerIndex, { column, row }, FULL_PASS_NEIGHBOR_OFFSETS);
       if (partialHeuristic === Number.MAX_VALUE || partialHeuristic === -Number.MAX_VALUE) return partialHeuristic;
       heuristic += partialHeuristic;
     }
   }
-  // }
 
   return heuristic;
 }
 
-function heuristicAtCoords(state: Connect4State, coords: Coords, checkOffsets: Offset[]): number {
-  const board = state.get();
-  const value = getCellAtUnsafe(state.get(), coords.column, coords.row);
+function heuristicAtCoords(board: Connect4Board, ourPlayerIndex: number, coords: Coords, checkOffsets: Offset[]): number {
+  const value = getCellAtUnsafe(board, coords.column, coords.row);
   let heuristic = 0;
   if (value !== EMPTY) {
     for (let offset of checkOffsets) {
       const length = chainLength(coords, offset, board);
       if (length >= 4) {
-        return (value === state.ourPlayerIndex ? 1 : -1) * Number.MAX_VALUE;
+        return (value === ourPlayerIndex ? 1 : -1) * Number.MAX_VALUE;
       }
-      heuristic += Math.pow(2, length) * ((value === state.ourPlayerIndex) ? 1 : -1);
+      heuristic += Math.pow(2, length) * ((value === ourPlayerIndex) ? 1 : -1);
     }
   }
   return heuristic;

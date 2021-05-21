@@ -23,7 +23,7 @@ export class Node<T, U extends Move> {
     if (!this.children) {
       this.children = this.state.availableMoves()
         .map((move) => new Node(this.state.fork(move), this, move))
-        .sort((a, b) => (this.state.isOurTurn() ? 1 : -1) * b.minimaxValue - a.minimaxValue);
+        .sort((a, b) => (this.state.isOurTurn() ? 1 : -1) * (b.minimaxValue - a.minimaxValue));
     }
   }
 
