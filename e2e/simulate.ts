@@ -6,16 +6,22 @@ import playMoves from "@/utils/playMoves";
 import printBoard from "@/utils/printBoard";
 
 const board = emptyBoard();
-playMoves(board, [3, 3, 3, 3, 1, 3, 7, 3, 6]);
+playMoves(board, [0, 0, 3, 3, 0, 3, 7, 3]);
 printBoard(board);
 
 let bestMoves: number[] = [];
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 20; i++) {
 
   const state = new Connect4State(0, true, board);
-  const minimax = new Minimax(stateHeuristic, moveHeuristic, { maxDepth: 4, maxIterations: 50 });
-  const bestMove = minimax.searchBestMove(state, { printBranches: false, printFinalGraph: false });
+  const minimax = new Minimax(stateHeuristic, moveHeuristic, {
+    maxDepth: 2,
+    timeoutInMs: 70,
+    printBranches: false,
+    printFinalGraph: false,
+    //printIterationCount: true
+  });
+  const bestMove = minimax.searchBestMove(state);
   bestMoves.push(bestMove.column);
 
 }

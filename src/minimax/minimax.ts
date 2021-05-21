@@ -11,6 +11,8 @@ export interface MinimaxOptions {
   maxIterations: number;
   printIterationCount: boolean;
   printClock: boolean;
+  printFinalGraph: boolean;
+  printBranches: boolean;
 }
 
 export class Minimax<T, U extends Move> {
@@ -23,14 +25,14 @@ export class Minimax<T, U extends Move> {
     private options: Partial<MinimaxOptions> = {}) {
   }
 
-  searchBestMove(rootState: State<T, U>, options: { printFinalGraph?: boolean; printBranches?: boolean } = {}): U {
+  searchBestMove(rootState: State<T, U>): U {
     const clock = new Clock();
     const root = new Node(rootState, 'root', this.stateHeuristic(rootState), undefined);
     const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
     for (let i = 0; i < maxIterations; i++) { // TODO Explore more intelligently
       const node = this.explore(root, this.options.maxDepth);
-      if (options.printBranches) console.error(formatMoves(node));
+      if (this.options.printBranches) console.error(formatMoves(node));
       if (clock.readMillis() >= this.options.timeoutInMs) {
         if (this.options.printIterationCount) console.error(`Aborting after ${i} iterations`);
         break;
@@ -38,7 +40,7 @@ export class Minimax<T, U extends Move> {
     }
 
     if (this.options.printClock) clock.print();
-    if (options.printFinalGraph) console.error(formatNode(root));
+    if (this.options.printFinalGraph) console.error(formatNode(root));
 
     if (root.children.length === 0) {
       console.error('ERROR: no children explored');

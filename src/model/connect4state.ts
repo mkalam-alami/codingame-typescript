@@ -3,7 +3,7 @@ import { Move } from "../minimax/move";
 import { State } from "../minimax/state";
 import { getCellAt } from "../utils/cellAt";
 
-export const ROWS = 8;
+export const ROWS = 7;
 export const COLUMNS = 9;
 export const EMPTY = -1;
 export const PLAYER_0 = 0;

@@ -55,6 +55,6 @@ export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (stat
   return heuristic;
 }
 
-export const connect4minimax = new Minimax(stateHeuristic, moveHeuristic, { maxDepth: 4, timeoutInMs: 50 });
+export const connect4minimax = new Minimax(stateHeuristic, moveHeuristic, { maxDepth: 2, timeoutInMs: 70 });
 
 export default connect4minimax;
