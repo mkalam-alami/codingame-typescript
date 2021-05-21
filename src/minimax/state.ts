@@ -10,7 +10,7 @@ export interface State<T, U extends Move> {
    * Returns the list of all available (and interesting) moves for the current player, and their heuristic evaluations.
    * Return an empty list if the game is over.
    */
-  availableMoves(): [U, number][];
+  availableMoves(): U[];
 
   fork(move: U): State<T, U>;
 

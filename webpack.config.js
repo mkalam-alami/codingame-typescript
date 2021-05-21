@@ -5,6 +5,7 @@ module.exports = {
     codingame: './src/index.ts'
   },
   mode: 'production',
+  target: 'node',
   module: {
     rules: [
       {

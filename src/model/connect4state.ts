@@ -39,12 +39,10 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
     return this._isOurTurn;
   }
 
-  availableMoves(): [Connect4Move, number][] {
-    const validMoves = DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1)
-      .map<[Connect4Move, number]>(move => [move, this.fork(move).evaluate()]);
-
+  availableMoves(): Connect4Move[] {
+    const validMoves = DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1);
     if (this.options.restrictMoves) {
-      return validMoves.filter(m => this.options.restrictMoves.includes(m[0].column));
+      return validMoves.filter(m => this.options.restrictMoves.includes(m.column));
     }
     return validMoves;
   }

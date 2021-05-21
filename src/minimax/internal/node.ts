@@ -21,6 +21,7 @@ export class Node<T, U extends Move> {
 
     const availableMoves = state.availableMoves();
     this.children = availableMoves
+      .map<[U, number]>((move) => [move, state.fork(move).evaluate()])
       .sort((a, b) => (state.isOurTurn() ? 1 : -1) * b[1] - a[1])
       .map(([move, _score]) => ({ move }));
 

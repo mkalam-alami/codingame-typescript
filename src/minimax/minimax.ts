@@ -1,3 +1,4 @@
+import { writeFileSync } from "fs";
 import { Clock } from "./clock";
 import { formatMoves, formatNode, MoveNode, Node } from "./internal/node";
 import pickWeighedRandom from "./internal/pickRandom";
@@ -37,7 +38,11 @@ export class Minimax<T, U extends Move> {
     }
 
     if (this.options.printClock) clock.print();
-    if (this.options.printFinalGraph) console.debug(formatNode(root));
+    if (this.options.printFinalGraph) {
+      const out = formatNode(root);
+      //console.debug(out);
+      writeFileSync('out.log', out);
+    }
 
     if (root.children.length === 0) {
       throw new Error('no possible moves');

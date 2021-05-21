@@ -1,5 +1,5 @@
-import { Minimax } from "./minimax/minimax";
-import Connect4State, { Connect4Board, Connect4Move } from "./model/connect4state";
+import connect4minimax from "./heuristics";
+import Connect4State from "./model/connect4state";
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
 import playMoves from "./utils/playMoves";
@@ -13,13 +13,12 @@ describe('heuristics: defense', () => {
     playMove(board, 3, 1);
 
     const state = new Connect4State(0, true, board);
-    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });
-    const bestMove = minimax.searchBestMove(state);
+    const bestMove = connect4minimax.searchBestMove(state);
 
     expect(bestMove.column).toBe(3);
   });
 
-  it('should avoid a losing move #2', () => {
+  fit('should avoid a losing move #2', () => {
     // .........
     // .........
     // .........
@@ -30,11 +29,10 @@ describe('heuristics: defense', () => {
     const board = emptyBoard();
     playMoves(board, [3, 3, 4, 5, 6, 5, 7, 6]);
 
-    const state = new Connect4State(0, true, board);
-    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });
+    const state = new Connect4State(0, true, board, undefined);
 
     for (let i = 0; i < 10; i++) {
-      const bestMove = minimax.searchBestMove(state);
+      const bestMove = connect4minimax.searchBestMove(state);
       expect(bestMove.column).toBe(4);
     }
   });
@@ -51,10 +49,9 @@ describe('heuristics: defense', () => {
     playMoves(board, [3, 3, 3, 3, 1, 3, 7, 3, 6]);
 
     const state = new Connect4State(0, true, board, undefined, { restrictMoves: [3, 4, 5] });
-    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2, printFinalGraph: true });
 
     for (let i = 0; i < 10; i++) {
-      const bestMove = minimax.searchBestMove(state);
+      const bestMove = connect4minimax.searchBestMove(state);
       expect(bestMove.column).toBe(3);
     }
   });
@@ -71,11 +68,11 @@ describe('heuristics: defense', () => {
     playMoves(board, [8, 1, 6, 5, 4, 4, 0, 4, 4, 4, 4, 1, 2, 2]);
 
     const state = new Connect4State(0, true, board);
-    const minimax = new Minimax<Connect4Board, Connect4Move>({ maxDepth: 2 });
 
     for (let i = 0; i < 10; i++) {
-      const bestMove = minimax.searchBestMove(state);
+      const bestMove = connect4minimax.searchBestMove(state);
       expect(bestMove.column).not.toBe(3);
     }
   });
+
 });
