@@ -27,20 +27,22 @@ export class Minimax<T, U extends Move> {
     const root = new Node(rootState, 'root', 'root');
     const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
-    for (let i = 0; i < maxIterations; i++) {
+    let i: number;
+    for (i = 0; i < maxIterations; i++) {
       const node = this.explore(root, this.options.maxDepth);
-      if (this.options.printBranches) console.debug(formatMoves(node));
+      if (this.options.printBranches) console.error(formatMoves(node));
       if (node === root) break; // Fully explored
       if (clock.readMillis() >= this.options.timeoutInMs) {
-        if (this.options.printIterationCount) console.debug(`Aborting after ${i} iterations`);
+        if (this.options.printClock) console.error(`Aborting due to timeout`);
         break;
       }
     }
+    if (this.options.printIterationCount) console.error(`Ran ${i} iterations`);
 
     if (this.options.printClock) clock.print();
     if (this.options.printFinalGraph) {
       const out = formatNode(root);
-      //console.debug(out);
+      //console.error(out);
       writeFileSync('out.log', out);
     }
 
