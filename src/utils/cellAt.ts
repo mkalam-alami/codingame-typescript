@@ -13,11 +13,11 @@ export function getCellAt(board: Connect4Board, column: number, row: number): nu
   return board[column + COLUMNS * row];
 }
 
-export function setCellAtUnsafe(board: Connect4Board, column: number, row: number, value: Connect4Cell): void {
+export function setCellAtUnsafe(board: Connect4Board, column: number, row: number, value: number): void {
   board[column + COLUMNS * row] = value;
 }
 
-export function setCellAt(board: Connect4Board, column: number, row: number, value: Connect4Cell): void {
+export function setCellAt(board: Connect4Board, column: number, row: number, value: number): void {
   if (column < 0 || row < 0 || column >= COLUMNS || row >= ROWS) return;
   board[column + COLUMNS * row] = value;
 }

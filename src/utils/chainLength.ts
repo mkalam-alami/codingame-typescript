@@ -1,8 +1,8 @@
 import { Connect4Board, Coords } from "@/model/connect4state";
 import { getCellAt, getCellAtUnsafe, isValidCell } from "./cellAt";
-import { Offset } from "./neighborOffsets";
+import { Delta } from "./neighborDir";
 
-export default function chainLength(start: Coords, direction: Offset, board: Connect4Board): number {
+export default function chainLength(start: Coords, direction: Delta, board: Connect4Board): number {
   let coords: Coords = { column: start.column + direction.dx, row: start.row + direction.dy };
   let expected = getCellAtUnsafe(board, start.column, start.row);
   let length = 1;

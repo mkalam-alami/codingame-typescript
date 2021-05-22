@@ -1,45 +1,20 @@
 import { Minimax } from "./minimax/minimax";
 import { StateHeuristic } from "./minimax/state";
-import Connect4State, { COLUMNS, Connect4Board, Connect4Move, Coords, EMPTY, ROWS } from "./model/connect4state";
+import Connect4State, { COLUMNS, Connect4Board, Connect4Move } from "./model/connect4state";
 import { getCellAtUnsafe } from "./utils/cellAt";
-import chainLength from "./utils/chainLength";
-import { Offset } from "./utils/neighborOffsets";
+import { highestP1Length, highestP2Length } from "./utils/cellData";
+import fallingRow from "./utils/fallingRow";
 
-const FULL_PASS_NEIGHBOR_OFFSETS: Offset[] = [
-  { dx: 0, dy: 1 },
-  { dx: 1, dy: -1 },
-  { dx: 1, dy: 0 },
-  { dx: 1, dy: 1 }
-];
-
-// TODO Only compute heuristic at empty cells?
-// TODO (Optimize) Holding heuristic at coords locally per cell (fraction?) to avoid full pass
 export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (state: Connect4State): number => {
+  const board = state.get();
   let heuristic = 0;
 
-  for (let row = 0; row < ROWS; row++) {
     for (let column = 0; column < COLUMNS; column++) {
-      const partialHeuristic = heuristicAtCoords(state.get(), state.ourPlayerIndex, { column, row }, FULL_PASS_NEIGHBOR_OFFSETS);
-      if (partialHeuristic === Number.MAX_VALUE || partialHeuristic === -Number.MAX_VALUE) return partialHeuristic;
-      heuristic += partialHeuristic;
+      const row = fallingRow(board, column);
+      const cellData = getCellAtUnsafe(board, column, row);
+      heuristic += Math.pow(highestP1Length(cellData) + highestP2Length(cellData), 2);
     }
-  }
 
-  return heuristic;
-}
-
-function heuristicAtCoords(board: Connect4Board, ourPlayerIndex: number, coords: Coords, checkOffsets: Offset[]): number {
-  const value = getCellAtUnsafe(board, coords.column, coords.row);
-  let heuristic = 0;
-  if (value !== EMPTY) {
-    for (let offset of checkOffsets) {
-      const length = chainLength(coords, offset, board);
-      if (length >= 4) {
-        return (value === ourPlayerIndex ? 1 : -1) * Number.MAX_VALUE;
-      }
-      heuristic += Math.pow(2, length) * ((value === ourPlayerIndex) ? 1 : -1);
-    }
-  }
   return heuristic;
 }
 
