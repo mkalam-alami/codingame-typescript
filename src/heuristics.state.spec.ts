@@ -37,7 +37,7 @@ describe('heuristics: state evaluation', () => {
     expect(heuristic).toBe(0);
   });
 
-  it('should give zero value to identical chains', () => {
+  fit('should give zero value to identical chains', () => {
     const board = emptyBoard();
     playMove(board, 3, 0);
     playMove(board, 3, 0);
