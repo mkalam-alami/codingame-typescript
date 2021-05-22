@@ -44,12 +44,12 @@ function heuristicAtCoords(board: Connect4Board, ourPlayerIndex: number, coords:
 }
 
 export const connect4minimax = new Minimax<Connect4Board, Connect4Move>({
-  maxDepth: 5,
+  maxDepth: 3,
   // maxIterations: 1000,
   //printClock: true,
-  timeoutInMs: 80,
-  exportFinalGraph: 2,
-  //printIterationCount: true
+  timeoutInMs: 90,
+  exportFinalGraph: true,
+  printIterationCount: true
 });
 
 export default connect4minimax;
