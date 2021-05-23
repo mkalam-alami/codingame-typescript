@@ -14,14 +14,16 @@ export function analyzeBoard(board: Connect4Board) {
 export function analyzeBoardAroundCell(board: Connect4Board, column: number, row: number) {
   analyzeCell(board, column, row);
   for (let direction of NEIGHBOR_DIRS) {
-    analyzeCell(board, column + direction.dx, row +  + direction.dy);
+    for (let distance = 1; distance <= 3; distance++) {
+      analyzeCell(board, column + direction.dx * distance, row + direction.dy * distance);
+    }
   }
 }
 
 export function analyzeCell(board: Connect4Board, column: number, row: number) {
   let newValue = getCellAtUnsafe(board, column, row) & PLAYER_MASK;
 
-  let axisIndex = 0;
+  let axisIndex = -1;
   let axisLengthP0 = 0, axisLengthP1 = 0;
   for (let direction of NEIGHBOR_DIRS) {
     axisIndex += 0.5;
@@ -42,9 +44,11 @@ export function analyzeCell(board: Connect4Board, column: number, row: number) {
       else axisLengthP1 += directionLength;
     }
 
-    if (axisIndex % .5 === 0) {
-      newValue = withLength(newValue, axisLengthP0, axisIndex, 0);
-      newValue = withLength(newValue, axisLengthP1, axisIndex, 1);
+    if ((axisIndex % 1) === 0) {
+      newValue = withLength(newValue, Math.min(3, axisLengthP0), axisIndex, 0);
+      newValue = withLength(newValue, Math.min(3, axisLengthP1), axisIndex, 1);
+      axisLengthP0 = 0;
+      axisLengthP1 = 0;
     }
   }
 

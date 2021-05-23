@@ -1,4 +1,5 @@
-import { COLUMNS, Connect4Board, Connect4Cell, ROWS } from "../model/connect4state";
+import { COLUMNS, Connect4Board, ROWS } from "../model/connect4state";
+import { EMPTY } from "./cellData";
 
 export function isValidCell(column: number, row: number): boolean {
   return column >= 0 && row >= 0 && column < COLUMNS && row < ROWS;
@@ -9,7 +10,7 @@ export function getCellAtUnsafe(board: Connect4Board, column: number, row: numbe
 }
 
 export function getCellAt(board: Connect4Board, column: number, row: number): number {
-  if (column < 0 || row < 0 || column >= COLUMNS || row >= ROWS) return -9;
+  if (column < 0 || row < 0 || column >= COLUMNS || row >= ROWS) return EMPTY;
   return board[column + COLUMNS * row];
 }
 
