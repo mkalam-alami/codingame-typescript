@@ -52,12 +52,12 @@ export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (stat
 }
 
 export const connect4minimax = new Minimax<Connect4Board, Connect4Move>({
-  maxDepth: 3,
+  maxDepth: 4,
   // maxIterations: 1000,
   //printClock: true,
   timeoutInMs: 90,
-  exportFinalGraph: true,
-  // printIterationCount: true
+  //exportFinalGraph: true,
+  //printIterationCount: true
 });
 
 export default connect4minimax;

@@ -29,7 +29,7 @@ describe('heuristics: defense', () => {
     const board = emptyBoard();
     playMoves(board, [3, 3, 4, 5, 6, 5, 7, 6]);
 
-    const state = new Connect4State(0, true, board, undefined);
+    const state = new Connect4State(0, true, board);
 
     for (let i = 0; i < 10; i++) {
       const bestMove = connect4minimax.searchBestMove(state);
@@ -48,7 +48,7 @@ describe('heuristics: defense', () => {
     const board = emptyBoard();
     playMoves(board, [3, 3, 3, 3, 1, 3, 7, 3, 6]);
 
-    const state = new Connect4State(0, true, board, undefined, { restrictMoves: [3, 4, 5] });
+    const state = new Connect4State(0, true, board);
 
     for (let i = 0; i < 10; i++) {
       const bestMove = connect4minimax.searchBestMove(state);

@@ -11,7 +11,7 @@ printBoard(board);
 let bestMoves: number[] = [];
 
 for (let i = 0; i < 20; i++) {
-  const state = new Connect4State(0, true, board, undefined, { restrictMoves: [3, 4] });
+  const state = new Connect4State(0, true, board, { restrictMoves: [3, 4] });
   const minimax = new Minimax<Connect4Board, Connect4Move>({
     maxDepth: 2,
     // timeoutInMs: 70,
