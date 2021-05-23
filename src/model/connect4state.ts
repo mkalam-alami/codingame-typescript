@@ -1,5 +1,6 @@
 import { analyzeBoardAroundCell } from "@/boardAnalyzer";
 import { stateHeuristic } from "@/heuristics";
+import { IS_SET_MASK } from "@/utils/cellData";
 import playMove from "@/utils/playMove";
 import { Move } from "../minimax/move";
 import { State } from "../minimax/state";
@@ -38,7 +39,7 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
   }
 
   availableMoves(): Connect4Move[] {
-    const validMoves = DEFAULT_MOVES.filter(move => getCellAt(this.board, move.column, 0) === -1);
+    const validMoves = DEFAULT_MOVES.filter(move => !(getCellAt(this.board, move.column, 0) & IS_SET_MASK));
     if (this.options.restrictMoves) {
       return validMoves.filter(m => this.options.restrictMoves.includes(m.column));
     }

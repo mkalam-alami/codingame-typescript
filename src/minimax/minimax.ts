@@ -71,7 +71,6 @@ export class Minimax<T, U extends Move> {
     node.initChildren();
     const unexploredChildren = node.children.filter(c => !c.isFullyExplored);
     const child = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
-    if (child === undefined) console.log(unexploredChildren, node);
     return this.explore(child, maxDepth - 1);
   }
 
