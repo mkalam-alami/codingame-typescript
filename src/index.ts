@@ -2,6 +2,8 @@ import connect4minimax from "./heuristics";
 import { Connect4Move } from "./model/connect4state";
 import { parseIsFirstPlayer, parseState } from "./model/parser";
 
+//traceReadline();
+
 const isFirstPlayer = parseIsFirstPlayer();
 const moveHistory: number[] = [];
 

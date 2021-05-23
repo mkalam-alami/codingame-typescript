@@ -49,7 +49,7 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
   fork(move: Connect4Move): Connect4State {
     const forkedBoard = this.board.slice();
     const newCellValue = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex)) as Connect4Cell;
-    const updatedRow = playMove(forkedBoard, move.column, newCellValue);
+    playMove(forkedBoard, move.column, newCellValue);
     return new Connect4State(this.ourPlayerIndex, !this._isOurTurn, forkedBoard, this.options);
   }
 

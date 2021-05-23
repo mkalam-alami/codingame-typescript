@@ -2,6 +2,10 @@ import { COLUMNS, Connect4Board } from "@/model/connect4state";
 import { toPrintableValue } from "./cellData";
 
 export default function printBoard(board: Connect4Board, withData = false) {
+  console.error(formatBoard(board, withData));
+}
+
+export function formatBoard(board: Connect4Board, withData = false) {
   let output = '';
   let data = '';
   let line = '';
@@ -18,7 +22,7 @@ export default function printBoard(board: Connect4Board, withData = false) {
     }
   })
 
-  console.error(output + data);
+  return output + data;
 }
 
 function indexToCoords(index: number): string {

@@ -13,17 +13,18 @@ export const moveHeuristic = (move: Connect4Move, state: Connect4State): number 
   return Math.pow(2, highestP1Length(cellData) + highestP2Length(cellData));
 }
 
-export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (state: Connect4State): number => {
+export const stateHeuristic = (state: Connect4State, verbose = false): number => {
   const board = state.get();
   let heuristic = 0;
+  let verboseOutput = '';
 
   for (let column = 0; column < COLUMNS; column++) {
     let fRow = fallingRow(board, column);
-    let visitRows: number[];
-    if (fRow === -1) visitRows = [fRow + 1];
-    else {
-      visitRows = [fRow];
-      if (fRow < 7) visitRows.push(fRow + 1);
+    let visitRows = [fRow];
+    if (fRow === -1) {
+      visitRows[0] = 0;
+    } else if (fRow < 6) {
+      visitRows.push(fRow + 1);
     }
 
     for (const row of visitRows) {
@@ -41,12 +42,16 @@ export const stateHeuristic: StateHeuristic<Connect4Board, Connect4Move> = (stat
 
       } else {
         // Possible move
-        heuristic += Math.pow(2, highestP1Length(cellData)) - Math.pow(2, highestP2Length(cellData))
-          * ((state.ourPlayerIndex === 0) ? 1 : -1);
+        const cellHeuristic = (Math.pow(2, highestP1Length(cellData)) - Math.pow(2, highestP2Length(cellData)))
+        * ((state.ourPlayerIndex === 0) ? 1 : -1);
+        if (verbose) verboseOutput += `r${row}c${column}: ${cellHeuristic}, `;
+        heuristic += cellHeuristic;
       }
     }
 
   }
+
+  if (verbose) console.debug(verboseOutput);
 
   return heuristic;
 }

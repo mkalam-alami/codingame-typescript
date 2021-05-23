@@ -2,6 +2,8 @@ import { stateHeuristic } from "./heuristics";
 import Connect4State from "./model/connect4state";
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
+import playMoves from "./utils/playMoves";
+import printBoard from "./utils/printBoard";
 
 describe('heuristics: state evaluation', () => {
 
@@ -37,7 +39,7 @@ describe('heuristics: state evaluation', () => {
     expect(heuristic).toBe(0);
   });
 
-  fit('should give zero value to identical chains', () => {
+  it('should give zero value to identical chains', () => {
     const board = emptyBoard();
     playMove(board, 3, 0);
     playMove(board, 3, 0);
