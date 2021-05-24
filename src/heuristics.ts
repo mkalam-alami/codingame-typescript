@@ -59,11 +59,12 @@ export const stateHeuristic = (state: Connect4State, verbose = false): number =>
 export const connect4minimax = new Minimax<Connect4Board, Connect4Move>({
   // maxIterations: 1000,
   //printClock: true,
-  strategy: 'breadth-first',
+  maxDepth: 4,
+  strategy: 'depth-first',
   timeoutInMs: 85,
   // printFinalBranch: true,
   //exportFinalGraph: true,
-  // printIterationCount: true,
+  printIterationCount: true,
   // printFinalGraph: 2
 });
 
