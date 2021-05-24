@@ -8,7 +8,6 @@ import { getCellAt } from "../utils/cellAt";
 
 export const ROWS = 7;
 export const COLUMNS = 9;
-export const EMPTY = -1;
 
 export interface Coords { row: number; column: number };
 export type Connect4Cell = -1 | 0 | 1;
@@ -48,8 +47,8 @@ export default class Connect4State implements State<Connect4Board, Connect4Move>
 
   fork(move: Connect4Move): Connect4State {
     const forkedBoard = this.board.slice();
-    const newCellValue = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex)) as Connect4Cell;
-    playMove(forkedBoard, move.column, newCellValue);
+    const playerIndex = (this.isOurTurn() ? this.ourPlayerIndex : (1 - this.ourPlayerIndex));
+    playMove(forkedBoard, move.column, playerIndex);
     return new Connect4State(this.ourPlayerIndex, !this._isOurTurn, forkedBoard, this.options);
   }
 

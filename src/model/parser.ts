@@ -1,5 +1,5 @@
-import { PLAYER_0, PLAYER_1 } from "../utils/cellData";
-import Connect4State, { Connect4Board, EMPTY } from "./connect4state";
+import { EMPTY, PLAYER_0, PLAYER_1 } from "../utils/cellData";
+import Connect4State, { Connect4Board } from "./connect4state";
 
 export function parseIsFirstPlayer(): boolean {
   return readline().split(' ')[0] === '0';

@@ -13,12 +13,13 @@ let bestMoves: number[] = [];
 for (let i = 0; i < 20; i++) {
   const state = new Connect4State(0, true, board, { restrictMoves: [3, 4] });
   const minimax = new Minimax<Connect4Board, Connect4Move>({
-    maxDepth: 2,
-    // timeoutInMs: 70,
-    maxIterations: 10,
+    maxDepth: 6,
+    timeoutInMs: 85,
+    // maxIterations: 10,
     //timeoutInMs: 70,
     //printBranches: true,
-    //printIterationCount: true
+    // printIterationCount: true,
+    // printClock: true
   });
   const bestMove = minimax.searchBestMove(state);
   bestMoves.push(bestMove.column);

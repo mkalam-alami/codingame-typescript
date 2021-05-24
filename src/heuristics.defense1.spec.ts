@@ -1,10 +1,12 @@
 import connect4minimax from "./heuristics";
 import Connect4State from "./model/connect4state";
+import testBestMove from "./test/testBestMove";
+import testBoard from "./test/testBoard";
 import emptyBoard from "./utils/emptyBoard";
 import playMove from "./utils/playMove";
 import playMoves from "./utils/playMoves";
 
-describe('heuristics: defense', () => {
+describe('heuristics: defense level 1', () => {
 
   it('should avoid a losing move', () => {
     const board = emptyBoard();
@@ -91,6 +93,26 @@ describe('heuristics: defense', () => {
     for (let i = 0; i < 10; i++) {
       const bestMove = connect4minimax.searchBestMove(state);
       expect(bestMove.column).toBe(0);
+    }
+  });
+
+  it('should avoid a losing move #6', () => {
+    // ....0....
+    // ....10...
+    // ....11...
+    // ....10...
+    // ....01.1.
+    // ....1010.
+    // ....0100.
+    const board = testBoard([
+      4, 4, 4, 4, 7, 4, 7,
+      4, 4, 5, 5, 5, 5, 5,
+      5, 7, 6, 6
+    ]);
+
+    for (let i = 0; i < 10; i++) {
+      const column = testBestMove(board);
+      expect(column).not.toBe(6);
     }
   });
 

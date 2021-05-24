@@ -1,21 +1,19 @@
-import { analyzeBoard } from "./boardAnalyzer";
-import connect4minimax, { stateHeuristic } from "./heuristics";
+import { stateHeuristic } from "./heuristics";
 import Connect4State from "./model/connect4state";
-import { setCellAt } from "./utils/cellAt";
-import { PLAYER_0, PLAYER_1 } from "./utils/cellData";
-import emptyBoard from "./utils/emptyBoard";
+import testBoard from "./test/testBoard";
+import printBoard from "./utils/printBoard";
 
 xdescribe('heuristics: sandbox', () => {
 
   it('test', () => {
-    const board = emptyBoard();
-    setCellAt(board, 4, 5, PLAYER_1);
-    setCellAt(board, 4, 6, PLAYER_0);
-    analyzeBoard(board);
+    const board7 = testBoard([4, 4, 5, 3, 7]);
+    const board5 = testBoard([4, 4, 5, 3, 5]);
 
-    const state = new Connect4State(0, true, board);
-    const move = connect4minimax.searchBestMove(state);
-    console.log('Result: ' + move.column);
+    printBoard(board5);
+    console.log(5 + '>', stateHeuristic(new Connect4State(0, true, board5), true));
+
+    printBoard(board7);
+    console.log(7 + '>', stateHeuristic(new Connect4State(0, true, board7), true));
   });
-  
+
 });

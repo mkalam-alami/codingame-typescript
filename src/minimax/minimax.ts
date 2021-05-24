@@ -15,6 +15,8 @@ export interface MinimaxOptions {
   printFinalGraph: boolean | number;
   exportFinalGraph: boolean | number;
   printBranches: boolean;
+  printFinalBranch: boolean;
+  strategy: 'depth-first' | 'breadth-first'
 }
 
 export class Minimax<T, U extends Move> {
@@ -23,6 +25,7 @@ export class Minimax<T, U extends Move> {
 
   constructor(private options: Partial<MinimaxOptions> = {}) {
     this.options.maxDepth ??= 50;
+    this.options.strategy ??= 'depth-first';
   }
 
   searchBestMove(rootState: State<T, U>): U {
@@ -31,18 +34,36 @@ export class Minimax<T, U extends Move> {
     const maxIterations = this.options.maxIterations ?? (this.options.timeoutInMs ? Number.MAX_VALUE : 1000);
 
     let i: number;
-    for (i = 0; i < maxIterations; i++) {
-      const leaf = this.explore(root, this.options.maxDepth);
-      if (this.options.printBranches) console.error(formatMoves(leaf));
+    if (this.options.strategy === 'depth-first') {
+      // TODO Alpha beta pruning depth-first
+      for (i = 0; i < maxIterations; i++) {
+        const leaf = this.exploreDepthFirst(root, this.options.maxDepth);
+        if (this.options.printBranches) console.error(formatMoves(leaf));
 
-      if (root.isFullyExplored) break; // Fully explored
-      if (clock.readMillis() >= this.options.timeoutInMs) {
-        if (this.options.printClock) console.error(`Aborting due to timeout`);
-        break;
+        if (root.isFullyExplored) break;
+        if (clock.readMillis() >= this.options.timeoutInMs) {
+          if (this.options.printClock) console.error(`Aborting due to timeout`);
+          break;
+        }
       }
-    }
-    if (this.options.printIterationCount) console.error(`Ran ${i} iterations`);
+    } else {
+      // TODO Alpha beta pruning breadth-first
+      let unvisited = [root];
+      for (i = 0; i < maxIterations; i++) {
+        const node = unvisited.splice(0, 1)[0];
+        const newNodes = this.exploreBreadthFirst(node, this.options.maxDepth);
+        unvisited.push(...newNodes);
 
+        if (unvisited.length === 0) break;
+        if (clock.readMillis() >= this.options.timeoutInMs) {
+          if (this.options.printClock) console.error(`Aborting due to timeout`);
+          break;
+        }
+      }
+      if (this.options.printFinalBranch && unvisited.length > 0) console.error(formatMoves(unvisited[0]));
+    }
+
+    if (this.options.printIterationCount) console.error(`Ran ${i} iterations`);
     if (this.options.printClock) clock.print();
     if (this.options.printFinalGraph) console.error(formatNode(root, typeof this.options.printFinalGraph === 'boolean' ? -1 : this.options.printFinalGraph));
     if (this.options.exportFinalGraph) {
@@ -62,7 +83,18 @@ export class Minimax<T, U extends Move> {
     return bestChild.lastMove;
   }
 
-  private explore(node: Node<T, U>, maxDepth: number) {
+  private exploreBreadthFirst(node: Node<T, U>, maxDepth: number): Array<Node<T, U>> {
+    if (node.isEnd || maxDepth === 0) {
+      this.finalizeNode(node);
+      return [];
+    }
+
+    node.initChildren();
+    this.finalizeNode(node);
+    return node.children;
+  }
+
+  private exploreDepthFirst(node: Node<T, U>, maxDepth: number) {
     if (node.isEnd || maxDepth === 0) {
       this.finalizeNode(node);
       return node;
@@ -71,7 +103,7 @@ export class Minimax<T, U extends Move> {
     node.initChildren();
     const unexploredChildren = node.children.filter(c => !c.isFullyExplored);
     const child = pickWeighedRandom(unexploredChildren, 3 / (this.options.moveRandomization || 1));
-    return this.explore(child, maxDepth - 1);
+    return this.exploreDepthFirst(child, maxDepth - 1);
   }
 
   private finalizeNode(node: Node<T, U>) {

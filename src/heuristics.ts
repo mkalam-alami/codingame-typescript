@@ -4,7 +4,7 @@ import { getCellAtUnsafe } from "./utils/cellAt";
 import { IS_SET_MASK, p0ChainLengths, p1ChainLengths, PLAYER_0, PLAYER_MASK } from "./utils/cellData";
 import fallingRow from "./utils/fallingRow";
 
-// TODO Use move heuristic to sort them
+// TODO Use move heuristic to sort them?
 export const moveHeuristic = (move: Connect4Move, state: Connect4State): number => {
   const board = state.get();
   const row = fallingRow(board, move.column);
@@ -21,12 +21,7 @@ export const stateHeuristic = (state: Connect4State, verbose = false): number =>
   for (let column = 0; column < COLUMNS; column++) {
     // Choose rows to visit for that column
     let fRow = fallingRow(board, column);
-    let visitRows = [fRow];
-    if (fRow === -1) {
-      visitRows[0] = 0;
-    } else if (fRow < 6) {
-      visitRows.push(fRow + 1);
-    }
+    let visitRows = [fRow - 1, fRow, fRow + 1, fRow + 2].filter(r => r >= 0 && r <= 6);
 
     for (const row of visitRows) {
       const cellData = getCellAtUnsafe(board, column, row);
@@ -46,7 +41,7 @@ export const stateHeuristic = (state: Connect4State, verbose = false): number =>
 
       } else {
         // Possible move
-        cellHeuristic = (p0ChainLengths(cellData).reduce((a,b) => (a+1)*(b+1)) - p1ChainLengths(cellData).reduce((a,b) => (a+1)*(b+1)))
+        cellHeuristic = (p0ChainLengths(cellData).reduce((a,b) => (a||1)*(b||1)) - p1ChainLengths(cellData).reduce((a,b) => (a||1)*(b||1)))
           * ((state.ourPlayerIndex === 0) ? 1 : -1);
       }
 
@@ -62,12 +57,14 @@ export const stateHeuristic = (state: Connect4State, verbose = false): number =>
 }
 
 export const connect4minimax = new Minimax<Connect4Board, Connect4Move>({
-  maxDepth: 4,
   // maxIterations: 1000,
   //printClock: true,
-  timeoutInMs: 90,
+  strategy: 'breadth-first',
+  timeoutInMs: 85,
+  // printFinalBranch: true,
   //exportFinalGraph: true,
-  //printIterationCount: true
+  // printIterationCount: true,
+  // printFinalGraph: 2
 });
 
 export default connect4minimax;
