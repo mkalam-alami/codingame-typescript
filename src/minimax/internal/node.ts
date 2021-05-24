@@ -39,7 +39,7 @@ export function printNode<T, U extends Move>(node: Node<T, U>, maxDepth = -1, of
 }
 
 export function formatNode<T, U extends Move>(node: Node<T, U>, maxDepth = -1, offset = 0): string {
-  let output = spaces(offset) + (node.lastMove?.format() || 'ROOT') + ' ' + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.state.isOurTurn() ? 'P1' : 'P2') + ' turn \n';
+  let output = spaces(offset) + (node.lastMove?.format() || 'ROOT') + ' ' + '[' + formatMinimax(node.minimaxValue) + '] ' + (node.state.isOurTurn() ? 'P0' : 'P1') + ' turn \n';
   if (node.children && maxDepth !== 0) {
     if (maxDepth === 1) {
       output += spaces(offset + 2);

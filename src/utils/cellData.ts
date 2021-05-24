@@ -11,20 +11,26 @@ export function toPrintableValue(cellData: number) {
   return '1';
 }
 
-export function highestP1Length(cellData: number) {
-  return Math.max(
-    (cellData & 0b1100) >> 2,
-    (cellData & 0b1100_0000) >> 6,
+/**
+ * Axes: - | / \
+ */
+export function p0ChainLengths(cellData: number): [number, number, number, number] {
+  return [
+    (cellData & 0b1100_0000_0000_0000) >> 14,
     (cellData & 0b1100_0000_0000) >> 10,
-    (cellData & 0b1100_0000_0000_0000) >> 14);
+    (cellData & 0b1100_0000) >> 6,
+    (cellData & 0b1100) >> 2 ];
 }
 
-export function highestP2Length(cellData: number) {
-  return Math.max(
-    (cellData & 0b11),
-    (cellData & 0b11_0000) >> 4,
+/**
+ * Axes: - | / \
+ */
+export function p1ChainLengths(cellData: number): [number, number, number, number] {
+  return [
+    (cellData & 0b11_0000_0000_0000) >> 12,
     (cellData & 0b11_0000_0000) >> 8,
-    (cellData & 0b11_0000_0000_0000) >> 12);
+    (cellData & 0b11_0000) >> 4,
+    (cellData & 0b11) ];
 }
 
 export function getLength(cellData: number, axisIndex: number, player: number) {

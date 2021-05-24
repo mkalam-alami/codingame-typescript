@@ -1,4 +1,4 @@
-import { getLength, highestP1Length, highestP2Length, IS_SET_MASK, PLAYER_0, PLAYER_1, PLAYER_MASK, withLength } from "./cellData";
+import { getLength, p0ChainLengths, p1ChainLengths, IS_SET_MASK, PLAYER_0, PLAYER_1, PLAYER_MASK, withLength } from "./cellData";
 
 describe('cell data', () => {
 
@@ -8,8 +8,8 @@ describe('cell data', () => {
     expect(cellData & IS_SET_MASK).toBe(0);
     expect(cellData & PLAYER_MASK).not.toBe(PLAYER_0);
     expect(cellData & PLAYER_MASK).not.toBe(PLAYER_1);
-    expect(highestP1Length(cellData)).toBe(0);
-    expect(highestP2Length(cellData)).toBe(0);
+    expect(p0ChainLengths(cellData)).toEqual([0, 0, 0, 0]);
+    expect(p1ChainLengths(cellData)).toEqual([0, 0, 0, 0]);
     expect(getLength(cellData, 0, 0)).toBe(0);
     expect(getLength(cellData, 0, 1)).toBe(0);
   });
@@ -20,8 +20,8 @@ describe('cell data', () => {
     expect(cellData & IS_SET_MASK).not.toBe(0);
     expect(cellData & PLAYER_MASK).not.toBe(PLAYER_0);
     expect(cellData & PLAYER_MASK).toBe(PLAYER_1);
-    expect(highestP1Length(cellData)).toBe(1);
-    expect(highestP2Length(cellData)).toBe(2);
+    expect(p0ChainLengths(cellData)).toEqual([0, 1, 1, 0]);
+    expect(p1ChainLengths(cellData)).toEqual([2, 2, 0, 1]);
 
     expect(getLength(cellData, 0, 0)).toBe(0);
     expect(getLength(cellData, 0, 1)).toBe(2);
