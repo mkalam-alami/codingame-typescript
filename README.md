@@ -33,7 +33,7 @@ La commande lance simultanément deux types de tests :
 
 Attention : les tests end-to-end utilisent la **version compilée** du bot. Il vaut mieux donc garder un `npm start` d'ouvert en même temps.
 
-## Scripts custom
+## Scripts arbitraires
 
 Si l'on souhaite lancer un script arbitraire sans s'encombrer du framework de tests, on peut lancer :
 
