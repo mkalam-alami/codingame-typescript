@@ -33,6 +33,16 @@ La commande lance simultanément deux types de tests :
 
 Attention : les tests end-to-end utilisent la **version compilée** du bot. Il vaut mieux donc garder un `npm start` d'ouvert en même temps.
 
+## Scripts custom
+
+Si l'on souhaite lancer un script arbitraire sans s'encombrer du framework de tests, on peut lancer :
+
+```
+npm run exec src/monscript.ts
+```
+
+Attention : cela ne marchera pas avec `src/index.ts`, car la fonction `readline()` n'existe pas en dehors de CodinGame ou des tests end-to-end.
+
 ## Challenge Spring 2021
 
 La branche [challenge-spring-2021](https://github.com/mkalam-alami/codingame-typescript/tree/challenge-spring-2021) est prête à l'emploi avec un bot minimaliste :
