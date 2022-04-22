@@ -43,19 +43,24 @@ npm run exec src/monscript.ts
 
 Attention : cela ne marchera pas avec `src/index.ts`, car la fonction `readline()` n'existe pas en dehors de CodinGame ou des tests end-to-end.
 
-## Challenge Spring 2021
+## Challenge Spring 2022
 
-La branche [challenge-spring-2021](https://github.com/mkalam-alami/codingame-typescript/tree/challenge-spring-2021) est prête à l'emploi avec un bot minimaliste :
+La branche [challenge-spring-2022](https://github.com/mkalam-alami/codingame-typescript/tree/challenge-spring-2022) est prête à l'emploi avec un bot minimaliste :
 
 ```typescript
-import { formatMove } from "./io/move";
-import { parseGameState, parseMap } from "./io/parser";
+import { logHeroAction } from "./io/move";
+import { parseGameSettings, parseGameState } from "./io/parser";
+import { randomPosition } from "./utils";
 
-const map = parseMap();
+const settings = parseGameSettings();
 
 while (true) {
-    const gameState = parseGameState(map);
-    const move = gameState.possibleMoves[0];
-    console.log(formatMove(move));
+    const state = parseGameState();
+
+    const myHeroes = state.entities.filter(e => e.type === 'my-hero');
+    for (const myHero of myHeroes) {
+        const targetPosition = randomPosition();
+        logHeroAction({ type: 'MOVE', x: targetPosition.x, y: targetPosition.y });
+    }
 }
 ```
