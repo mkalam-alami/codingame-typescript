@@ -67,9 +67,9 @@ function parseType(type: number): EntityType {
 
 function parseThreatFor(threatFor: number): ThreatFor {
   switch (threatFor) {
-    case 0: return 'my-base';
-    case 1: return 'opponent-base';
-    case 2: return 'nobody';
+    case 0: return 'nobody';
+    case 1: return 'my-base';
+    case 2: return 'opponent-base';
   }
 }
 
