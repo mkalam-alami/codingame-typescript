@@ -13,16 +13,20 @@ export function parseGameSettings(): GameSettings {
 
 export function parseGameState(): GameState {
   const state: GameState = {
-    health: 0,
-    mana: 0,
+    myHealth: 0,
+    myMana: 0,
+    opponentHealth: 0,
+    opponentMana: 0,
     entities: []
   };
 
-  for (let i = 0; i < 2; i++) {
-    var inputs: string[] = readline().split(' ');
-    state.health = parseInt(inputs[0]);
-    state.mana = parseInt(inputs[1]);
-  }
+  var inputs: string[] = readline().split(' ');
+  state.myHealth = parseInt(inputs[0]);
+  state.myMana = parseInt(inputs[1]);
+
+  var inputs: string[] = readline().split(' ');
+  state.opponentHealth = parseInt(inputs[0]);
+  state.opponentMana = parseInt(inputs[1]);
 
   const entityCount = parseInt(readline());
   for (let i = 0; i < entityCount; i++) {
@@ -142,11 +146,19 @@ export interface GameState {
   /**
    * Your base health
    */
-  health: number;
+  myHealth: number;
   /**
    * Spend ten mana to cast a spell
    */
-  mana: number;
+  myMana: number;
+   /**
+    * Your base health
+    */
+  opponentHealth: number;
+   /**
+    * Spend ten mana to cast a spell
+    */
+  opponentMana: number;
   /**
    * All the heroes and monsters you can see
    */
