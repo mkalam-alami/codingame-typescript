@@ -24,7 +24,7 @@ export interface GameState {
    */
   tileList: TileState[];
   /**
-   * toutes les cases de la carte accessibles par leurs coordonnées.
+   * toutes les cases de la carte accessibles par leurs coordonnées map[x][y].
    */
   map: TileState[][];
   /**
@@ -77,12 +77,14 @@ export function parseGameState(mapSize: Size): GameState {
   const myMatter: number = parseInt(inputs[0]);
   const oppMatter: number = parseInt(inputs[1]);
   const tileList: TileState[] = [];
-  const map: TileState[][] = [];
+
+  // Init map with empty tiles
+  const map: TileState[][] = Array.apply(null, Array(mapSize.width));
+  for (let x = 0; x < mapSize.width; x++) {
+    map[x] = Array.apply(null, Array(mapSize.height))
+  }
 
   for (let y = 0; y < mapSize.height; y++) {
-    const row: TileState[] = [];
-    map.push(row);
-
     for (let x = 0; x < mapSize.width; x++) {
       const inputs: string[] = readline().split(' ');
       const scrapAmount: number = parseInt(inputs[0]);
@@ -104,7 +106,7 @@ export function parseGameState(mapSize: Size): GameState {
         inRangeOfRecycler
       };
 
-      row.push(tile);
+      map[x][y] = tile;
       tileList.push(tile);
     }
   }
