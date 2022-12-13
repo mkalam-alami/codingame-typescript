@@ -2,7 +2,6 @@
 
 Ce template permet de travailler sur son bot en dehors de l'éditeur Codingame.  
 
-
 **Avantages**
 
 * Utiliser son éditeur favori
@@ -43,24 +42,25 @@ npm run exec src/monscript.ts
 
 Attention : cela ne marchera pas avec `src/index.ts`, car la fonction `readline()` n'existe pas en dehors de CodinGame ou des tests end-to-end.
 
-## Challenge Spring 2022
+## Fall Challenge 2022
 
-La branche [challenge-spring-2022](https://github.com/mkalam-alami/codingame-typescript/tree/challenge-spring-2022) est prête à l'emploi avec un bot minimaliste :
+La branche [challenge-fall-2022](https://github.com/mkalam-alami/codingame-typescript/tree/challenge-fall-2022) est prête à l'emploi avec un bot minimaliste :
 
 ```typescript
-import { logHeroAction } from "./io/move";
-import { parseGameSettings, parseGameState } from "./io/parser";
-import { randomPosition } from "./utils";
+import { Action, playActions } from './io/action';
+import { parseGameState, parseMapSize } from './io/parser';
+import { randomPosition } from './util/random';
 
-const settings = parseGameSettings();
+const MAP_SIZE = parseMapSize();
 
 while (true) {
-    const state = parseGameState();
+  const state = parseGameState(MAP_SIZE);
 
-    const myHeroes = state.entities.filter(e => e.type === 'my-hero');
-    for (const myHero of myHeroes) {
-        const targetPosition = randomPosition();
-        logHeroAction({ type: 'MOVE', x: targetPosition.x, y: targetPosition.y });
-    }
+  const myUnits = state.tileList.filter(tile => tile.owner === 'me' && tile.units > 0);
+  const actions: Action[] = myUnits.map(tile => {
+    return { type: 'MOVE', from: tile.position, to: randomPosition(MAP_SIZE), amount: tile.units }
+  });
+
+  playActions(actions);
 }
 ```
