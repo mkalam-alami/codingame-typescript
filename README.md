@@ -1,4 +1,4 @@
-# CodingGame en TypeScript
+# CodinGame en TypeScript
 
 Ce template permet de travailler sur son bot en dehors de l'éditeur Codingame.  
 
