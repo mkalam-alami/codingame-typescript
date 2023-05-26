@@ -1,16 +1,15 @@
 import { Action, playActions } from './io/action';
-import { parseGameState, parseMapSize } from './io/parser';
-import { randomPosition } from './util/random';
+import { parseMap, parseMapState } from './io/parser';
 
-const mapSize = parseMapSize();
+const map = parseMap();
 
 while (true) {
-  const state = parseGameState(mapSize);
+  const state = parseMapState(map);
 
-  const myUnits = state.tileList.filter(tile => tile.owner === 'me' && tile.units > 0);
-  const actions: Action[] = myUnits.map(tile => {
-    return { type: 'MOVE', from: tile.position, to: randomPosition(mapSize), amount: tile.units }
-  });
+  const actions: Action[] = [];
+  for (const cell of state.cells) {
+    actions.push({ type: 'BEACON', cellIndex: cell.index, weight: 1 });
+  }
 
   playActions(actions);
 }

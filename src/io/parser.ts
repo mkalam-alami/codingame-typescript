@@ -1,131 +1,222 @@
-export interface Point {
-  x: number;
-  y: number;
+
+export type ResourceType = 'empty' | 'eggs' | 'crystal';
+export type BaseType = 'none' | 'mine' | 'opponent';
+
+export interface Cell {
+  /**
+   * The unique identifier of the cell. It also marks its index in the cells array:
+   * `state.cells[index]` will always work.
+   */
+  index: number;
+
+  /**
+   * Whether this cell contains 'eggs', 'crystal' or is 'empty' in terms of resources.
+   */
+  resourceType: ResourceType;
+
+  /**
+   * Whether this cell has a base of 'mine', an 'opponent' base, or 'none'.
+   */
+  baseType: BaseType;
+
+  /**
+   * Number of resources on the cell before the game starts.
+   */
+  initialResources: number;
+
+  /**
+   * List of references to all neighbor cells.
+   * Its length varies according to the number of existing or absent neighbors.
+   */
+  neighbors: Cell[];
+
+  /**
+   * Neighboring cell references, starting from the top-left neighbor and turning clockwise.
+   * Absent neighbors will return undefined.
+   */
+  neighborsByDirection: Array<Cell | undefined>;
+
+  /**
+   * Neighboring cell indexes, starting from the top-left neighbor and turning clockwise.
+   * Absent neighbors will return undefined.
+   */
+  neighborIndexesByDirection: Array<number | undefined>;
 }
 
-export interface Size {
-  width: number;
-  height: number;
+export interface CellState extends Cell {
+  /**
+   * The current amount of eggs or crystals in the cell.
+   */
+  resources: number;
+
+  /**
+   * The current amount of my ants in the cell.
+   */
+  myAnts: number;
+
+  /**
+   * The current amount of opponent ants in the cell.
+   */
+  opponentAnts: number;
+
+  /**
+   * List of references to all neighbor cells.
+   * Its length varies according to the number of existing or absent neighbors.
+   */
+  neighbors: CellState[];
+
+  /**
+   * Neighboring cell references, starting from the top-left neighbor and turning clockwise.
+   * Absent neighbors will return undefined.
+   */
+  neighborsByDirection: Array<CellState | undefined>;
 }
 
-export type Owner = 'me' | 'foe' | 'neutral';
+export interface Map<T extends Cell> {
+  /**
+   * List of all cells of the map.
+   */
+  cells: T[];
 
-export interface GameState {
   /**
-   * la quantité de matériaux du joueur.
+   * List of cells holding my bases.
    */
-  myMatter: number;
+  myBases: T[];
+
   /**
-   * la quantité de matériaux de l'adversaire.
+   * List of cells holding opponent bases.
    */
-  oppMatter: number;
+  opponentBases: T[];
+
   /**
-   * toutes les cases de la carte mises en vrac dans une liste.
+   * Current turn (starts at 1)
    */
-  tileList: TileState[];
-  /**
-   * toutes les cases de la carte accessibles par leurs coordonnées map[x][y].
-   */
-  map: TileState[][];
-  /**
-   * les dimensions de la carte.
-   */
-  mapSize: Size;
+  turnIndex: number;
 }
 
-export interface TileState {
-  /**
-   * les coordonnées de la case sur la carte.
-   */
-  position: Point;
-  /**
-   * le nombre de fois que cette case peut être recyclée avant de devenir de l'herbe.
-   */
-  scrapAmount: number;
-  /**
-   * le nombre d'unités sur cette case. Ces unités appartiennent à l'owner de la case.
-   */
-  owner: Owner;
-  units: number;
-  /**
-   * true si il y a un recycleur sur cette case. Ce recycleur appartient à l'owner de cette case. false s'il n'y pas pas de recycleur sur cette case.
-   */
-  recycler: boolean;
-  /**
-   * true si vous avez le droit de BUILD (construire) un recycleur sur cette case ce tour. false sinon.
-   */
-  canBuild: boolean;
-  /**
-   * true si vous avez le droit de SPAWN (ajouter) des robots sur cette case ce tour. false sinon.
-   */
-  canSpawn: boolean;
-  /**
-   * true si cette tuile se fera réduire sa scrapAmount par un recycleur à la fin du tour. false sinon.
-   */
-  inRangeOfRecycler: boolean;
-}
+export function parseMap(): Map<Cell> {
+  const map: Map<Cell> = {
+    cells: [],
+    myBases: [],
+    opponentBases: [],
+    turnIndex: 0
+  };
 
-export function parseMapSize(): Size {
-  var inputs: string[] = readline().split(' ');
-  const width: number = parseInt(inputs[0]);
-  const height: number = parseInt(inputs[1]);
-  return { width, height };
-}
+  const numberOfCells: number = parseInt(readline()); // amount of hexagonal cells in this map
+  for (let i = 0; i < numberOfCells; i++) {
+    var inputs: string[] = readline().split(' ');
+    const type: number = parseInt(inputs[0]); // 0 for empty, 1 for eggs, 2 for crystal
+    const initialResources: number = parseInt(inputs[1]); // the initial amount of eggs/crystals on this cell
+    const neigh0: number = parseInt(inputs[2]); // the index of the neighbouring cell for each direction
+    const neigh1: number = parseInt(inputs[3]);
+    const neigh2: number = parseInt(inputs[4]);
+    const neigh3: number = parseInt(inputs[5]);
+    const neigh4: number = parseInt(inputs[6]);
+    const neigh5: number = parseInt(inputs[7]);
 
-export function parseGameState(mapSize: Size): GameState {
-  const inputs: string[] = readline().split(' ');
-  const myMatter: number = parseInt(inputs[0]);
-  const oppMatter: number = parseInt(inputs[1]);
-  const tileList: TileState[] = [];
-
-  // Init map with empty tiles
-  const map: TileState[][] = Array.apply(null, Array(mapSize.width));
-  for (let x = 0; x < mapSize.width; x++) {
-    map[x] = Array.apply(null, Array(mapSize.height))
+    map.cells.push({
+      index: i,
+      baseType: 'none',
+      resourceType: parseCellType(type),
+      initialResources,
+      neighbors: [],
+      neighborsByDirection: [],
+      neighborIndexesByDirection: [
+        undefinedIfNegative(neigh0),
+        undefinedIfNegative(neigh1),
+        undefinedIfNegative(neigh2),
+        undefinedIfNegative(neigh3),
+        undefinedIfNegative(neigh4),
+        undefinedIfNegative(neigh5)
+      ],
+    });
   }
 
-  for (let y = 0; y < mapSize.height; y++) {
-    for (let x = 0; x < mapSize.width; x++) {
-      const inputs: string[] = readline().split(' ');
-      const scrapAmount: number = parseInt(inputs[0]);
-      const owner: Owner = parseOwner(inputs[1]);
-      const units: number = parseInt(inputs[2]);
-      const recycler: boolean = parseInt(inputs[3]) === 1;
-      const canBuild: boolean = parseInt(inputs[4]) === 1;
-      const canSpawn: boolean = parseInt(inputs[5]) === 1;
-      const inRangeOfRecycler: boolean = parseInt(inputs[6]) === 1;
+  map.cells.forEach(cell => {
+    cell.neighborIndexesByDirection.forEach((cellIndex, directionIndex) => {
+      if (cellIndex !== undefined) {
+        cell.neighbors.push(map.cells[cellIndex]);
+        cell.neighborsByDirection[directionIndex] = map.cells[cellIndex];
+      }
+    })
+  });
 
-      const tile = {
-        position: { x, y },
-        scrapAmount,
-        owner,
-        units,
-        recycler,
-        canBuild,
-        canSpawn,
-        inRangeOfRecycler
-      };
+  const numberOfBases: number = parseInt(readline());
+  var inputs: string[] = readline().split(' ');
+  for (let i = 0; i < numberOfBases; i++) {
+    const myBaseIndex: number = parseInt(inputs[i]);
+    map.cells[myBaseIndex].baseType = 'mine';
+    map.myBases.push(map.cells[myBaseIndex]);
+  }
+  var inputs: string[] = readline().split(' ');
+  for (let i = 0; i < numberOfBases; i++) {
+    const oppBaseIndex: number = parseInt(inputs[i]);
+    map.cells[oppBaseIndex].baseType = 'opponent';
+    map.opponentBases.push(map.cells[oppBaseIndex]);
+  }
 
-      map[x][y] = tile;
-      tileList.push(tile);
+  return map;
+}
+
+function parseCellType(cellType: number): ResourceType {
+  switch (cellType) {
+    case 2: return 'crystal';
+    case 1: return 'eggs';
+    case 0: return 'empty';
+  }
+}
+
+function undefinedIfNegative(n: number): number | undefined {
+  if (n < 0) {
+    return undefined;
+  }
+  return n;
+}
+
+export function parseMapState(map: Map<Cell>): Map<CellState> {
+  map.turnIndex++;
+
+  const mapState: Map<CellState> = {
+    cells: [],
+    myBases: [],
+    opponentBases: [],
+    turnIndex: map.turnIndex
+  };
+
+  for (let i = 0; i < map.cells.length; i++) {
+    var inputs: string[] = readline().split(' ');
+    const resources: number = parseInt(inputs[0]); // the current amount of eggs/crystals on this cell
+    const myAnts: number = parseInt(inputs[1]); // the amount of your ants on this cell
+    const opponentAnts: number = parseInt(inputs[2]); // the amount of opponent ants on this cell
+
+    const cellState: CellState = {
+      ...map.cells[i], // clone cell properties...
+      resources,
+      myAnts,
+      opponentAnts,
+
+      // ...but reset references to other cells, we'll point to cellStates instead
+      neighbors: [],
+      neighborsByDirection: []
+    };
+    mapState.cells.push(cellState);
+
+    if (cellState.baseType === 'mine') {
+      mapState.myBases.push(cellState);
+    } else if (cellState.baseType === 'opponent') {
+      mapState.opponentBases.push(cellState);
     }
   }
 
-  return {
-    myMatter,
-    oppMatter,
-    tileList,
-    map,
-    mapSize
-  }
+  mapState.cells.forEach(cell => {
+    cell.neighborIndexesByDirection.forEach((cellIndex, directionIndex) => {
+      if (cellIndex !== undefined) {
+        cell.neighbors.push(mapState.cells[cellIndex]);
+        cell.neighborsByDirection[directionIndex] = mapState.cells[cellIndex];
+      }
+    })
+  });
 
-}
 
-function parseOwner(ownerString): Owner {
-  // 1 = me, 0 = foe, -1 = neutral
-  switch (ownerString) {
-    case '1': return 'me';
-    case '0': return 'foe';
-    default: return 'neutral';
-  }
+  return mapState;
 }
