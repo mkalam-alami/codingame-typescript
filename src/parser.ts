@@ -1,4 +1,4 @@
-interface CompetitionState {
+export interface CompetitionState {
     playerIdx: number;
     nbGames: number;
 }
@@ -13,7 +13,7 @@ export function parseCompetitionState(): CompetitionState {
     };
 }
 
-interface Score {
+export interface Score {
     globalScore: number;
     goldMedals: number;
     silverMedals: number;
@@ -34,7 +34,7 @@ export function parseScore(): Score[] {
     return medailles;
 }
 
-interface MinigameState {
+export interface MinigameState {
     gpu: string;
     reg0: number;
     reg1: number;
