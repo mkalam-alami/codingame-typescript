@@ -15,20 +15,27 @@ export function parseCompetitionState(): CompetitionState {
 
 export interface Score {
     globalScore: number;
-    goldMedals: number;
-    silverMedals: number;
-    bronzeMedals: number
+    minigameMedals: MinigameMedals[];
 }
 
-export function parseScore(): Score[] {
+export type MinigameMedals = [GoldMedals, SilverMedals, BronzeMedals];
+
+export type GoldMedals = number;
+export type SilverMedals = number;
+export type BronzeMedals = number;
+
+export function parseScores(): Score[] {
     const medailles: Score[] = [];
     for (let i = 0; i < 3; i++) {
         const inputs = readline().split(' ');
         medailles.push({
             globalScore: parseInt(inputs[0]),
-            goldMedals: parseInt(inputs[1]),
-            silverMedals: parseInt(inputs[2]),
-            bronzeMedals: parseInt(inputs[3]),
+            minigameMedals: [
+                [parseInt(inputs[1]), parseInt(inputs[2]), parseInt(inputs[3])],
+                [parseInt(inputs[4]), parseInt(inputs[5]), parseInt(inputs[6])],
+                [parseInt(inputs[7]), parseInt(inputs[8]), parseInt(inputs[9])],
+                [parseInt(inputs[10]), parseInt(inputs[11]), parseInt(inputs[12])],
+            ]
         });
     }
     return medailles;

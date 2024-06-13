@@ -1,10 +1,10 @@
 import { playAction } from "./action";
-import { parseCompetitionState, parseScore, parseMinigameStates } from "./parser";
+import { parseCompetitionState, parseScores, parseMinigameStates } from "./parser";
 
 const { playerIdx, nbGames } = parseCompetitionState();
 
 while (true) {
-    parseScore();
+    parseScores();
 
     const miniGame = parseMinigameStates(nbGames)[0];
     const myPosition = miniGame['reg' + playerIdx];
